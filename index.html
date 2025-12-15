@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>服务下单平台</title>
+  <!-- 引入外部资源 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  
+  <!-- Tailwind配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#FF3A3A',
+            secondary: '#4A6CF7',
+            dark: '#1D2939',
+            light: '#F9FAFB',
+            gray: {
+              100: '#F3F4F6',
+              200: '#E5E7EB',
+              300: '#D1D5DB',
+              400: '#9CA3AF',
+              500: '#6B7280',
+              600: '#4B5563',
+              700: '#374151',
+              800: '#1F2937',
+              900: '#111827'
+            }
+          },
+          fontFamily: {
+            inter: ['Inter', 'sans-serif']
+          },
+          boxShadow: {
+            'elevation-1': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
+            'elevation-2': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+            'elevation-3': '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)'
+          }
+        }
+      }
+    }
+  </script>
+  
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .input-focus {
+        @apply focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200;
+      }
+      .btn-hover {
+        @apply hover:shadow-elevation-2 transform hover:-translate-y-0.5 transition-all duration-200;
+      }
+      .card-hover {
+        @apply hover:shadow-elevation-2 transition-all duration-300;
+      }
+      .btn-disabled {
+        @apply bg-gray-300 cursor-not-allowed hover:shadow-none hover:-translate-y-0;
+      }
+    }
+  </style>
+  
+  <!-- 自定义样式 -->
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #FAFAFA;
+    }
+    
+    /* 自定义滚动条 */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #c1c1c1;
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #a1a1a1;
+    }
+    
+    /* 数字输入框美化 */
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    /* 动画效果 */
+    .fade-in {
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* 进度条动画 - 加快一倍 */
+    @keyframes progress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    
+    .progress-animation {
+      animation: progress 0.75s ease-in-out forwards; /* 从1.5s改为0.75s */
+    }
+    
+    /* RTL 布局支持 */
+    body.rtl {
+      direction: rtl;
+      text-align: right;
+    }
+    
+    body.rtl .flex-rtl {
+      flex-direction: row-reverse;
+    }
+    
+    body.rtl .mr-2 {
+      margin-right: 0 !important;
+      margin-left: 0.5rem !important;
+    }
+    
+    body.rtl .ml-2 {
+      margin-left: 0 !important;
+      margin-right: 0.5rem !important;
+    }
+
+    /* 自定义下拉选项样式（如需在下拉中显示图片需使用自定义下拉，此处先实现选中后显示） */
+    .custom-select-option {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+  </style>
+</head>
+
+<body class="min-h-screen bg-light font-inter text-dark">
+  <!-- 顶部导航栏 -->
+  <header class="sticky top-0 z-50 bg-white shadow-elevation-1">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa fa-shopping-cart text-primary text-xl"></i>
+        <h1 class="text-lg font-bold" data-i18n="header.title">服务下单平台</h1>
+      </div>
+      
+      <!-- 语言选择下拉框 -->
+      <div class="relative">
+        <button id="languageBtn" class="flex items-center space-x-1 text-sm text-gray-600 hover:text-primary transition-colors">
+          <span data-i18n="header.language">中文</span>
+          <i class="fa fa-chevron-down text-xs"></i>
+        </button>
+        
+        <div id="languageDropdown" class="hidden absolute right-0 mt-2 w-36 bg-white rounded-lg shadow-elevation-2 overflow-hidden z-50">
+          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" data-lang="zh-CN">中文</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" data-lang="en">English</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" data-lang="ar">العربية</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主内容区 -->
+  <main class="container mx-auto px-4 py-6">
+    <!-- 服务卡片 -->
+    <div class="bg-white rounded-xl shadow-elevation-1 p-5 mb-6 card-hover">
+      <h2 class="text-lg font-bold mb-4" data-i18n="serviceOrder.title">服务订单</h2>
+      
+      <form id="orderForm" class="space-y-5">
+        <!-- 服务类别 -->
+        <div class="space-y-2">
+          <label for="serviceCategory" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.category">服务类别 <span class="text-primary">*</span></label>
+          <div class="relative">
+            <select id="serviceCategory" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white appearance-none input-focus" required>
+              <option value="" data-i18n="serviceOrder.selectCategory">请选择服务类别</option>
+              <option value="tiktok" selected>TikTok</option> <!-- 默认选中TikTok -->
+              <option value="instagram">Instagram</option>
+              <option value="youtube">YouTube</option>
+              <option value="facebook">Facebook</option>
+            </select>
+            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <i class="fa fa-chevron-down text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 服务项目 (带搜索功能) -->
+        <div class="space-y-2">
+          <label for="serviceItem" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.item">服务项目 <span class="text-primary">*</span></label>
+          
+          <!-- 搜索框 -->
+          <div class="relative mb-2">
+            <input type="text" id="serviceSearch" placeholder="搜索服务项目..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 input-focus" data-i18n="serviceOrder.searchPlaceholder">
+            <div class="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <i class="fa fa-search text-gray-400"></i>
+            </div>
+          </div>
+          
+          <!-- 服务项目下拉框 -->
+          <div class="relative">
+            <select id="serviceItem" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white appearance-none input-focus" required>
+              <option value="" data-description="" data-unit="" data-i18n="serviceOrder.selectItem">请选择服务项目</option>
+            </select>
+            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+              <i class="fa fa-chevron-down text-gray-400"></i>
+            </div>
+          </div>
+        </div>
+        
+        <!-- 描述 + 图片展示 -->
+        <div class="space-y-2">
+          <label for="description" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.description">服务描述</label>
+          <!-- 新增：服务图片展示容器 -->
+          <div id="serviceImageContainer" class="mb-2 hidden">
+            <img id="serviceImage" src="" alt="服务图片" class="h-16 w-auto rounded-md border border-gray-200 p-1">
+          </div>
+          <textarea id="description" rows="3" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 resize-none" readonly placeholder="选择服务项目后显示描述信息" data-i18n="serviceOrder.descriptionPlaceholder"></textarea>
+        </div>
+        
+        <!-- 账号/链接 -->
+        <div class="space-y-2">
+          <label for="accountUrl" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.accountUrl">账号 / 链接 <span class="text-primary">*</span></label>
+          <div class="relative">
+            <input type="text" id="accountUrl" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 input-focus" placeholder="填写要刷的链接或账号" required value="https://www.tiktok.com/@" data-i18n="serviceOrder.accountPlaceholder">
+            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <i class="fa fa-link"></i>
+            </div>
+          </div>
+          <!-- TikTok 专用提示 -->
+          <p id="tiktokHint" class="text-xs text-gray-500" data-i18n="serviceOrder.tiktokHint">
+            <i class="fa fa-info-circle"></i> TikTok账号格式应为: https://www.tiktok.com/@用户名
+          </p>
+        </div>
+        
+        <!-- 礼物 -->
+        <div class="space-y-2">
+          <label for="gift" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.gift">礼物</label>
+          <div class="relative">
+            <input type="number" id="gift" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 input-focus" value="0" readonly>
+            <div id="giftUnit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+              Galaxy
+            </div>
+          </div>
+        </div>
+        
+        <!-- 数量选择器 -->
+        <div class="space-y-2">
+          <label class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.quantity">数量 <span class="text-primary">*</span></label>
+          <div class="flex items-center">
+            <button type="button" id="decreaseBtn" class="w-10 h-10 flex items-center justify-center rounded-l-lg border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
+              <i class="fa fa-minus"></i>
+            </button>
+            <input type="number" id="quantity" class="w-full h-10 px-4 text-center border-t border-b border-gray-300 input-focus" value="1" min="1" required>
+            <button type="button" id="increaseBtn" class="w-10 h-10 flex items-center justify-center rounded-r-lg border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
+              <i class="fa fa-plus"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- 总价 -->
+        <div class="space-y-2">
+          <label for="totalPrice" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.totalPrice">总价</label>
+          <div class="relative">
+            <input type="number" id="totalPrice" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 font-bold text-primary input-focus" value="0" readonly>
+            <div id="totalUnit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">
+              Galaxy
+            </div>
+          </div>
+        </div>
+        
+        <!-- 下单按钮 -->
+        <button type="submit" id="orderBtn" class="w-full py-3 px-4 bg-primary text-white font-medium rounded-lg shadow-md btn-hover flex items-center justify-center" disabled>
+          <i class="fa fa-shopping-cart mr-2"></i>
+          <span data-i18n="serviceOrder.submit">下单</span>
+        </button>
+      </form>
+    </div>
+    
+    <!-- 推荐服务 -->
+    <div class="mb-6">
+      <h2 class="text-lg font-bold mb-4" data-i18n="recommendedServices.title">推荐服务</h2>
+      
+      <div class="grid grid-cols-2 gap-4">
+        <!-- 推荐服务卡片 1 -->
+        <div class="bg-white rounded-xl shadow-elevation-1 p-4 card-hover">
+          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
+            <i class="fa fa-user-plus text-primary"></i>
+          </div>
+          <h3 class="font-medium text-sm mb-1" data-i18n="recommendedServices.tiktokPackage">TikTok粉丝1000个</h3>
+          <p class="text-xs text-gray-500 mb-2" data-i18n="recommendedServices.tiktokPackageDesc">快速提升账号初始影响力</p>
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-primary">1 <span class="text-sm">Galaxy</span></span>
+            <button class="text-xs text-secondary hover:text-secondary/80 transition-colors" data-i18n="recommendedServices.select">选择</button>
+          </div>
+        </div>
+        
+        <!-- 推荐服务卡片 2 -->
+        <div class="bg-white rounded-xl shadow-elevation-1 p-4 card-hover">
+          <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-3">
+            <i class="fa fa-user-plus text-secondary"></i>
+          </div>
+          <h3 class="font-medium text-sm mb-1" data-i18n="recommendedServices.followerPackage">TikTok粉丝10000个</h3>
+          <p class="text-xs text-gray-500 mb-2" data-i18n="recommendedServices.followerPackageDesc">大幅提升账号曝光度</p>
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-primary">5 <span class="text-sm">Galaxy</span></span>
+            <button class="text-xs text-secondary hover:text-secondary/80 transition-colors" data-i18n="recommendedServices.select">选择</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 订单进度弹窗 -->
+    <div id="progressModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
+      <div class="bg-white rounded-xl shadow-elevation-3 p-6 max-w-md w-full mx-4 transform transition-all fade-in">
+        <div class="text-center">
+          <h3 class="text-lg font-bold mb-4" data-i18n="progressModal.title">处理中...</h3>
+          
+          <!-- 进度条 -->
+          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+            <div id="progressBar" class="bg-primary h-2.5 rounded-full progress-animation"></div>
+          </div>
+          
+          <p id="progressText" class="text-gray-600 mb-6" data-i18n="progressModal.processing">正在处理您的订单，请稍候...</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 订单完成提示 -->
+    <div id="successAlert" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden fade-in">
+      <div class="flex items-center">
+        <i class="fa fa-check-circle mr-2 text-xl"></i>
+        <div>
+          <p class="font-medium" data-i18n="alerts.orderConfirmed">Order confirmed!</p>
+          <p class="text-sm" data-i18n="alerts.completedIn24hrs">Completed in 24hrs. Please wait</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 错误提示 -->
+    <div id="errorAlert" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden fade-in">
+      <div class="flex items-center">
+        <i class="fa fa-exclamation-circle mr-2 text-xl"></i>
+        <div>
+          <p class="font-medium" data-i18n="alerts.inputError">输入错误</p>
+          <p id="errorMessage" class="text-sm" data-i18n="alerts.checkInput">请检查您的输入信息</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 订单记录区域 -->
+  <section id="orderHistory" class="container mx-auto px-4 py-6 mb-8">
+    <h2 class="text-lg font-bold mb-4" data-i18n="orderHistory.title">订单记录</h2>
+    <div id="orderList" class="space-y-4">
+      <!-- 订单记录将在这里动态添加 -->
+      <div class="text-center text-gray-500 py-8">
+        <i class="fa fa-history text-4xl mb-2"></i>
+        <p data-i18n="orderHistory.noOrders">暂无订单记录</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white py-6">
+    <div class="container mx-auto px-4">
+      <div class="grid grid-cols-2 gap-6 mb-6">
+        <div>
+          <h3 class="text-sm font-bold mb-3 uppercase" data-i18n="footer.aboutUs">关于我们</h3>
+          <p class="text-xs text-gray-400" data-i18n="footer.aboutUsDesc">提供高质量的社交媒体推广服务，帮助您快速提升账号影响力。</p>
+        </div>
+        
+        <div>
+          <h3 class="text-sm font-bold mb-3 uppercase" data-i18n="footer.contact">联系方式</h3>
+          <div class="space-y-2 text-xs text-gray-400">
+            <div class="flex items-center">
+              <i class="fa fa-envelope-o mr-2"></i>
+              <span>support@example.com</span>
+            </div>
+            <div class="flex items-center">
+              <i class="fa fa-phone mr-2"></i>
+              <span>+123 456 7890</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="border-t border-gray-800 pt-4 flex flex-col md:flex-row justify-between items-center">
+        <p class="text-xs text-gray-500 mb-3 md:mb-0" data-i18n="footer.copyright">© 2025 服务下单平台. 保留所有权利.</p>
+        
+        <div class="flex space-x-4">
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <i class="fa fa-facebook"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <i class="fa fa-twitter"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <i class="fa fa-instagram"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <i class="fa fa-telegram"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // 多语言映射表
+    const translations = {
+      'zh-CN': {
+        'header.title': '服务下单平台',
+        'header.language': '中文',
+        'serviceOrder.title': '服务订单',
+        'serviceOrder.category': '服务类别',
+        'serviceOrder.selectCategory': '请选择服务类别',
+        'serviceOrder.item': '服务项目',
+        'serviceOrder.searchPlaceholder': '搜索服务项目...',
+        'serviceOrder.selectItem': '请选择服务项目',
+        'serviceOrder.tiktokFollowers10': 'TikTok 粉丝 10 个',
+        'serviceOrder.tiktokFollowers100': 'TikTok 粉丝 100 个',
+        'serviceOrder.tiktokFollowers1000': 'TikTok 粉丝 1000 个',
+        'serviceOrder.tiktokFollowers10000': 'TikTok 粉丝 10000 个',
+        'serviceOrder.tiktokFollowers100000': 'TikTok 粉丝 100000 个',
+        'serviceOrder.description': '服务描述',
+        'serviceOrder.descriptionPlaceholder': '选择服务项目后显示描述信息',
+        'serviceOrder.accountUrl': '账号 / 链接',
+        'serviceOrder.accountPlaceholder': '填写要刷的链接或账号',
+        'serviceOrder.tiktokHint': 'TikTok账号格式应为: https://www.tiktok.com/@用户名',
+        'serviceOrder.gift': '礼物',
+        'serviceOrder.quantity': '数量',
+        'serviceOrder.totalPrice': '总价',
+        'serviceOrder.submit': '下单',
+        'recommendedServices.title': '推荐服务',
+        'recommendedServices.tiktokPackage': 'TikTok粉丝1000个',
+        'recommendedServices.tiktokPackageDesc': '快速提升账号初始影响力',
+        'recommendedServices.followerPackage': 'TikTok粉丝10000个',
+        'recommendedServices.followerPackageDesc': '大幅提升账号曝光度',
+        'recommendedServices.select': '选择',
+        'progressModal.title': '处理中...',
+        'progressModal.processing': '正在处理您的订单，请稍候...',
+        'alerts.orderConfirmed': '订单已确认!',
+        'alerts.completedIn24hrs': '24小时内完成，请等待',
+        'alerts.inputError': '输入错误',
+        'alerts.checkInput': '请检查您的输入信息',
+        'orderHistory.title': '订单记录',
+        'orderHistory.noOrders': '暂无订单记录',
+        'footer.aboutUs': '关于我们',
+        'footer.aboutUsDesc': '提供高质量的社交媒体推广服务，帮助您快速提升账号影响力。',
+        'footer.contact': '联系方式',
+        'footer.copyright': '© 2025 服务下单平台. 保留所有权利.'
+      },
+      'en': {
+        'header.title': 'Service Order Platform',
+        'header.language': 'English',
+        'serviceOrder.title': 'Service Order',
+        'serviceOrder.category': 'Service Category',
+        'serviceOrder.selectCategory': 'Please select service category',
+        'serviceOrder.item': 'Service Item',
+        'serviceOrder.searchPlaceholder': 'Search service items...',
+        'serviceOrder.selectItem': 'Please select service item',
+        'serviceOrder.tiktokFollowers10': 'TikTok Followers 10',
+        'serviceOrder.tiktokFollowers100': 'TikTok Followers 100',
+        'serviceOrder.tiktokFollowers1000': 'TikTok Followers 1000',
+        'serviceOrder.tiktokFollowers10000': 'TikTok Followers 10000',
+        'serviceOrder.tiktokFollowers100000': 'TikTok Followers 100000',
+        'serviceOrder.description': 'Service Description',
+        'serviceOrder.descriptionPlaceholder': 'Description will be displayed after selecting a service item',
+        'serviceOrder.accountUrl': 'Account / URL',
+        'serviceOrder.accountPlaceholder': 'Enter the URL or account to boost',
+        'serviceOrder.tiktokHint': 'TikTok account format should be: https://www.tiktok.com/@username',
+        'serviceOrder.gift': 'Gift',
+        'serviceOrder.quantity': 'Quantity',
+        'serviceOrder.totalPrice': 'Total Price',
+        'serviceOrder.submit': 'Place Order',
+        'recommendedServices.title': 'Recommended Services',
+        'recommendedServices.tiktokPackage': 'TikTok Followers 1000',
+        'recommendedServices.tiktokPackageDesc': 'Quickly boost initial account influence',
+        'recommendedServices.followerPackage': 'TikTok Followers 10000',
+        'recommendedServices.followerPackageDesc': 'Greatly increase account exposure',
+        'recommendedServices.select': 'Select',
+        'progressModal.title': 'Processing...',
+        'progressModal.processing': 'Processing your order, please wait...',
+        'alerts.orderConfirmed': 'Order confirmed!',
+        'alerts.completedIn24hrs': 'Completed in 24hrs. Please wait',
+        'alerts.inputError': 'Input Error',
+        'alerts.checkInput': 'Please check your input information',
+        'orderHistory.title': 'Order History',
+        'orderHistory.noOrders': 'No order records',
+        'footer.aboutUs': 'About Us',
+        'footer.aboutUsDesc': 'Provide high-quality social media promotion services to help you quickly increase your account influence.',
+        'footer.contact': 'Contact Us',
+        'footer.copyright': '© 2025 Service Order Platform. All rights reserved.'
+      },
+      'ar': {
+        'header.title': 'منصة طلب الخدمات',
+        'header.language': 'العربية',
+        'serviceOrder.title': 'طلب الخدمة',
+        'serviceOrder.category': 'فئة الخدمة',
+        'serviceOrder.selectCategory': 'الرجاء تحديد فئة الخدمة',
+        'serviceOrder.item': 'عنصر الخدمة',
+        'serviceOrder.searchPlaceholder': 'بحث عن عناصر الخدمة...',
+        'serviceOrder.selectItem': 'الرجاء تحديد عنصر الخدمة',
+        'serviceOrder.tiktokFollowers10': 'متابعي تيك توك 10',
+        'serviceOrder.tiktokFollowers100': 'متابعي تيك توك 100',
+        'serviceOrder.tiktokFollowers1000': 'متابعي تيك توك 1000',
+        'serviceOrder.tiktokFollowers10000': 'متابعي تيك توك 10000',
+        'serviceOrder.tiktokFollowers100000': 'متابعي تيك توك 100000',
+        'serviceOrder.description': 'وصف الخدمة',
+        'serviceOrder.descriptionPlaceholder': 'سيتم عرض الوصف بعد تحديد عنصر الخدمة',
+        'serviceOrder.accountUrl': 'الحساب / الرابط',
+        'serviceOrder.accountPlaceholder': 'أدخل الرابط أو الحساب لتحسينه',
+        'serviceOrder.tiktokHint': 'شكل حساب تيك توك يجب أن يكون: https://www.tiktok.com/@اسم المستخدم',
+        'serviceOrder.gift': 'هدية',
+        'serviceOrder.quantity': 'الكمية',
+        'serviceOrder.totalPrice': 'السعر الإجمالي',
+        'serviceOrder.submit': 'تقديم الطلب',
+        'recommendedServices.title': 'الخدمات الموصى بها',
+        'recommendedServices.tiktokPackage': 'متابعي تيك توك 1000',
+        'recommendedServices.tiktokPackageDesc': 'تعزيز التأثير الأولي للحساب بسرعة',
+        'recommendedServices.followerPackage': 'متابعي تيك توك 10000',
+        'recommendedServices.followerPackageDesc': 'زيادة التعرض الحساب بشكل كبير',
+        'recommendedServices.select': 'تحديد',
+        'progressModal.title': 'جاري المعالجة...',
+        'progressModal.processing': 'جاري معالجة طلبك، يرجى الانتظار...',
+        'alerts.orderConfirmed': 'تم تأكيد الطلب!',
+        'alerts.completedIn24hrs': 'سيتم الانتهاء في غضون 24 ساعة. يرجى الانتظار',
+        'alerts.inputError': 'خطأ في الإدخال',
+        'alerts.checkInput': 'يرجى التحقق من معلومات الإدخال الخاصة بك',
+        'orderHistory.title': 'تاريخ الطلبات',
+        'orderHistory.noOrders': 'لا توجد سجلات طلبات',
+        'footer.aboutUs': 'عن нами',
+        'footer.aboutUsDesc': 'تقديم خدمات الترويج الاجتماعي عالية الجودة لمساعدتك في زيادة تأثير حسابك بسرعة.',
+        'footer.contact': 'اتصل بنا',
+        'footer.copyright': '© 2025 منصة طلب الخدمات. جميع الحقوق محفوظة.'
+      }
+    };
+
+    // DOM元素
+    const languageBtn = document.getElementById('languageBtn');
+    const languageDropdown = document.getElementById('languageDropdown');
+    const serviceCategory = document.getElementById('serviceCategory');
+    const serviceItem = document.getElementById('serviceItem');
+    const serviceSearch = document.getElementById('serviceSearch');
+    const description = document.getElementById('description');
+    const gift = document.getElementById('gift');
+    const giftUnit = document.getElementById('giftUnit');
+    const quantity = document.getElementById('quantity');
+    const totalPrice = document.getElementById('totalPrice');
+    const totalUnit = document.getElementById('totalUnit');
+    const decreaseBtn = document.getElementById('decreaseBtn');
+    const increaseBtn = document.getElementById('increaseBtn');
+    const orderForm = document.getElementById('orderForm');
+    const orderBtn = document.getElementById('orderBtn');
+    const progressModal = document.getElementById('progressModal');
+    const progressBar = document.getElementById('progressBar');
+    const progressText = document.getElementById('progressText');
+    const successAlert = document.getElementById('successAlert');
+    const errorAlert = document.getElementById('errorAlert');
+    const errorMessage = document.getElementById('errorMessage');
+    const orderList = document.getElementById('orderList');
+    const accountUrlInput = document.getElementById('accountUrl');
+    const tiktokHint = document.getElementById('tiktokHint');
+    // 新增：服务图片相关元素
+    const serviceImageContainer = document.getElementById('serviceImageContainer');
+    const serviceImage = document.getElementById('serviceImage');
+    
+    // 当前选中的单位
+    let currentUnit = 'Galaxy';
+    // 订单计数器
+    let orderCounter = 0;
+    // 当前语言
+    let currentLang = 'zh-CN';
+    
+    // 初始化页面语言
+    function initLanguage() {
+      // 从localStorage获取保存的语言，如果没有则使用默认语言
+      const savedLang = localStorage.getItem('preferredLanguage');
+      if (savedLang && translations[savedLang]) {
+        currentLang = savedLang;
+      }
+      updatePageLanguage();
+    }
+    
+    // 更新页面语言
+    function updatePageLanguage() {
+      // 更新HTML lang属性
+      document.documentElement.lang = currentLang;
+      
+      // 更新所有带有data-i18n属性的元素
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (translations[currentLang][key]) {
+          // 处理placeholder属性
+          if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) {
+            el.placeholder = translations[currentLang][key];
+          } else {
+            el.textContent = translations[currentLang][key];
+          }
+        }
+      });
+      
+      // 处理RTL布局
+      if (currentLang === 'ar') {
+        document.body.classList.add('rtl');
+      } else {
+        document.body.classList.remove('rtl');
+      }
+      
+      // 更新语言选择按钮文本
+      document.querySelector('[data-i18n="header.language"]').textContent = translations[currentLang]['header.language'];
+      
+      // 保存语言偏好到localStorage
+      localStorage.setItem('preferredLanguage', currentLang);
+      
+      // 更新服务类别和项目的选项文本
+      updateServiceOptions();
+    }
+    
+    // 更新服务类别和项目的选项文本
+    function updateServiceOptions() {
+      // 更新服务类别选项
+      const categoryOptions = serviceCategory.options;
+      for (let i = 0; i < categoryOptions.length; i++) {
+        const option = categoryOptions[i];
+        const key = option.getAttribute('data-i18n');
+        if (key && translations[currentLang][key]) {
+          option.textContent = translations[currentLang][key];
+        }
+      }
+      
+      // 更新服务项目选项
+      const itemOptions = serviceItem.options;
+      for (let i = 0; i < itemOptions.length; i++) {
+        const option = itemOptions[i];
+        const key = option.getAttribute('data-i18n');
+        if (key && translations[currentLang][key]) {
+          option.textContent = translations[currentLang][key];
+        }
+      }
+    }
+    
+    // 语言选择下拉框切换
+    languageBtn.addEventListener('click', () => {
+      languageDropdown.classList.toggle('hidden');
+    });
+    
+    // 点击页面其他地方关闭下拉框
+    document.addEventListener('click', (e) => {
+      if (!languageBtn.contains(e.target)) {
+        languageDropdown.classList.add('hidden');
+      }
+    });
+    
+    // 语言选择事件
+    document.querySelectorAll('[data-lang]').forEach(el => {
+      el.addEventListener('click', (e) => {
+        e.preventDefault();
+        const lang = el.getAttribute('data-lang');
+        if (lang !== currentLang && translations[lang]) {
+          currentLang = lang;
+          updatePageLanguage();
+        }
+        languageDropdown.classList.add('hidden');
+      });
+    });
+    
+    // 服务项目搜索功能
+    serviceSearch.addEventListener('input', () => {
+      const searchTerm = serviceSearch.value.toLowerCase();
+      const options = serviceItem.options;
+      
+      for (let i = 0; i < options.length; i++) {
+        const optionText = options[i].text.toLowerCase();
+        options[i].style.display = optionText.includes(searchTerm) ? 'block' : 'none';
+      }
+    });
+    
+    // 服务项目选择事件 - 新增图片展示逻辑
+    serviceItem.addEventListener('change', () => {
+      const selectedOption = serviceItem.options[serviceItem.selectedIndex];
+      const serviceDescription = selectedOption.getAttribute('data-description') || '';
+      currentUnit = selectedOption.getAttribute('data-unit') || 'Galaxy';
+      // 新增：获取图片路径
+      const serviceImageSrc = selectedOption.getAttribute('data-image') || '';
+      
+      // 新增：处理图片显示/隐藏
+      if (serviceImageSrc) {
+        serviceImage.src = serviceImageSrc;
+        serviceImageContainer.classList.remove('hidden');
+      } else {
+        serviceImageContainer.classList.add('hidden');
+      }
+      
+      // 更新描述、价格和单位
+      description.value = serviceDescription;
+      gift.value = '1'; // 固定为1
+      giftUnit.textContent = currentUnit;
+      totalUnit.textContent = currentUnit;
+      
+      // 重置数量为1
+      quantity.value = '1';
+      
+      // 计算总价
+      calculateTotal();
+      
+      // 检查表单是否可以提交
+      checkFormValidity();
+    });
+    
+    // 数量增减按钮事件
+    decreaseBtn.addEventListener('click', () => {
+      if (quantity.value > 1) {
+        quantity.value = parseInt(quantity.value) - 1;
+        calculateTotal();
+      }
+    });
+    
+    increaseBtn.addEventListener('click', () => {
+      quantity.value = parseInt(quantity.value) + 1;
+      calculateTotal();
+    });
+    
+    // 数量输入框变化事件
+    quantity.addEventListener('input', () => {
+      // 确保数量不小于1
+      if (quantity.value < 1) {
+        quantity.value = 1;
+      }
+      calculateTotal();
+    });
+    
+    // 计算总价 - 总价 = 礼物数量 × 数量
+    function calculateTotal() {
+      const giftValue = parseInt(gift.value) || 1;
+      const qty = parseInt(quantity.value) || 1;
+      totalPrice.value = giftValue * qty;
+    }
+    
+    // 检查表单是否填写完整
+    function checkFormValidity() {
+      const serviceCategoryValue = serviceCategory.value;
+      const serviceItemValue = serviceItem.value;
+      const accountUrlValue = accountUrlInput.value.trim();
+      
+      // TikTok 特殊验证
+      if (serviceCategoryValue === 'tiktok') {
+        const atIndex = accountUrlValue.indexOf('@');
+        // 检查是否包含@且@后面有内容
+        if (atIndex === -1 || atIndex === accountUrlValue.length - 1) {
+          orderBtn.setAttribute('disabled', 'true');
+          orderBtn.classList.add('btn-disabled');
+          return false;
+        }
+      }
+      
+      if (serviceCategoryValue && serviceItemValue && accountUrlValue) {
+        orderBtn.removeAttribute('disabled');
+        orderBtn.classList.remove('btn-disabled');
+        return true;
+      } else {
+        orderBtn.setAttribute('disabled', 'true');
+        orderBtn.classList.add('btn-disabled');
+        return false;
+      }
+    }
+    
+    // 服务类别变化事件
+    serviceCategory.addEventListener('change', () => {
+      // 清空当前选项
+      serviceItem.innerHTML = '';
+      
+      // 添加默认选项
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.setAttribute('data-description', '');
+      defaultOption.setAttribute('data-unit', '');
+      defaultOption.setAttribute('data-image', ''); // 新增图片属性
+      defaultOption.setAttribute('data-i18n', 'serviceOrder.selectItem');
+      defaultOption.textContent = translations[currentLang]['serviceOrder.selectItem'];
+      serviceItem.appendChild(defaultOption);
+      
+      // 根据选择的服务类别添加对应的服务项目
+      const category = serviceCategory.value;
+      let serviceOptions = [];
+      
+      // TikTok 默认填充链接前缀和提示
+      if (category === 'tiktok') {
+        accountUrlInput.value = 'https://www.tiktok.com/@';
+        tiktokHint.classList.remove('hidden'); // 显示TikTok提示
+        serviceOptions = [
+          { 
+            value: 'tiktok_followers_10', 
+            text: 'TikTok 粉丝 10 个', 
+            description: '为您的TikTok账号增加10个粉丝，提升账号初始影响力', 
+            unit: 'Rosa', 
+            image: 'photo/a1.png', // 核心修改：指定为根目录photo文件夹下的a1.png
+            i18n: 'serviceOrder.tiktokFollowers10' 
+          },
+          { 
+            value: 'tiktok_followers_100', 
+            text: 'TikTok 粉丝 100 个', 
+            description: '为您的TikTok账号增加100个粉丝，稳步提升账号影响力', 
+            unit: 'Hand Heart', 
+            image: '', // 无图片
+            i18n: 'serviceOrder.tiktokFollowers100' 
+          },
+          { 
+            value: 'tiktok_followers_1000', 
+            text: 'TikTok 粉丝 1000 个', 
+            description: '为您的TikTok账号增加1000个粉丝，显著提升账号影响力', 
+            unit: 'Galaxy', 
+            image: '', // 无图片
+            i18n: 'serviceOrder.tiktokFollowers1000' 
+          },
+          { 
+            value: 'tiktok_followers_10000', 
+            text: 'TikTok 粉丝 10000 个', 
+            description: '为您的TikTok账号增加10000个粉丝，大幅提升账号影响力', 
+            unit: 'Flying Jets', 
+            image: '', // 无图片
+            i18n: 'serviceOrder.tiktokFollowers10000' 
+          },
+          { 
+            value: 'tiktok_followers_100000', 
+            text: 'TikTok 粉丝 100000 个', 
+            description: '为您的TikTok账号增加100000个粉丝，打造热门账号影响力', 
+            unit: 'Adam Dream', 
+            image: '', // 无图片
+            i18n: 'serviceOrder.tiktokFollowers100000' 
+          }
+        ];
+      } else {
+        accountUrlInput.value = '';
+        tiktokHint.classList.add('hidden'); // 隐藏TikTok提示
+        if (category === 'instagram') {
+          serviceOptions = [
+            { value: 'instagram_followers_1000', text: 'Instagram 粉丝 1000 个', description: '为您的Instagram账号增加1000个粉丝，提升账号影响力', unit: 'Galaxy', image: '', i18n: '' },
+            { value: 'instagram_likes_200', text: 'Instagram 点赞 200 个', description: '为您的Instagram帖子增加200个点赞，提升帖子受欢迎度', unit: 'Swan', image: '', i18n: '' }
+          ];
+        } else if (category === 'youtube') {
+          serviceOptions = [
+            { value: 'youtube_views_5000', text: 'YouTube 播放量 5000 次', description: '为您的YouTube视频提供5000次播放量，提升视频曝光度', unit: 'Money Gun', image: '', i18n: '' },
+            { value: 'youtube_subscribers_500', text: 'YouTube 订阅者 500 个', description: '为您的YouTube频道增加500个订阅者，提升频道影响力', unit: 'Galaxy', image: '', i18n: '' }
+          ];
+        } else if (category === 'facebook') {
+          serviceOptions = [
+            { value: 'facebook_likes_1000', text: 'Facebook 点赞 1000 个', description: '为您的Facebook页面增加1000个点赞，提升页面受欢迎度', unit: 'Swan', image: '', i18n: '' },
+            { value: 'facebook_followers_500', text: 'Facebook 粉丝 500 个', description: '为您的Facebook账号增加500个粉丝，提升账号影响力', unit: 'Giraffe', image: '', i18n: '' }
+          ];
+        }
+      }
+      
+      // 添加服务项目选项
+      serviceOptions.forEach(option => {
+        const newOption = document.createElement('option');
+        newOption.value = option.value;
+        newOption.setAttribute('data-description', option.description);
+        newOption.setAttribute('data-unit', option.unit);
+        newOption.setAttribute('data-image', option.image); // 绑定图片路径属性
+        if (option.i18n) {
+          newOption.setAttribute('data-i18n', option.i18n);
+          newOption.textContent = translations[currentLang][option.i18n] || option.text;
+        } else {
+          newOption.textContent = option.text;
+        }
+        serviceItem.appendChild(newOption);
+      });
+      
+      // 重置描述、价格和单位
+      description.value = '';
+      gift.value = '0';
+      giftUnit.textContent = 'Galaxy';
+      totalPrice.value = '0';
+      totalUnit.textContent = 'Galaxy';
+      quantity.value = '1';
+      currentUnit = 'Galaxy';
+      // 隐藏图片容器
+      serviceImageContainer.classList.add('hidden');
+      
+      // 检查表单是否可以提交
+      checkFormValidity();
+    });
+    
+    // 监听账号/链接输入变化
+    accountUrlInput.addEventListener('input', checkFormValidity);
+    
+    // 表单提交事件 - 加快一倍
+    orderForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // 再次验证表单（防止绕过前端验证）
+      if (!checkFormValidity()) {
+        // 显示错误提示
+        if (serviceCategory.value === 'tiktok') {
+          errorMessage.textContent = translations[currentLang]['serviceOrder.tiktokHint'];
+        } else {
+          errorMessage.textContent = translations[currentLang]['alerts.checkInput'];
+        }
+        errorAlert.style.display = 'block';
+        
+        // 3秒后隐藏错误提示
+        setTimeout(() => {
+          errorAlert.style.display = 'none';
+        }, 3000);
+        
+        return;
+      }
+      
+      // 显示进度条弹窗
+      progressModal.style.display = 'flex';
+      
+      // 模拟进度更新 - 再加快一倍（每75毫秒更新一次，总时长0.75秒）
+      let progress = 0;
+      const interval = setInterval(() => {
+        progress += Math.random() * 40; // 每次增加更多进度
+        if (progress > 100) progress = 100;
+        
+        // 更新进度条宽度
+        progressBar.style.width = `${progress}%`;
+        
+        // 更新进度文本（更快切换）
+        if (progress < 50) {
+          progressText.textContent = translations[currentLang]['progressModal.processing'];
+        } else if (progress < 80) {
+          progressText.textContent = translations[currentLang]['alerts.orderConfirmed'];
+        } else {
+          progressText.textContent = translations[currentLang]['alerts.completedIn24hrs'];
+        }
+        
+        // 当进度达到100%时，完成订单
+        if (progress === 100) {
+          clearInterval(interval);
+          
+          // 延迟250毫秒后关闭进度条弹窗（再加快一倍）
+          setTimeout(() => {
+            progressModal.style.display = 'none';
+            successAlert.style.display = 'block';
+            
+            // 添加订单记录
+            addOrderRecord();
+            
+            // 5秒后隐藏成功提示
+            setTimeout(() => {
+              successAlert.style.display = 'none';
+            }, 5000);
+          }, 250);
+        }
+      }, 75); // 从150ms改为75ms
+    });
+    
+    // 添加订单记录
+    function addOrderRecord() {
+      orderCounter++;
+      
+      // 获取订单信息
+      const categoryText = serviceCategory.options[serviceCategory.selectedIndex].text;
+      const itemText = serviceItem.options[serviceItem.selectedIndex].text;
+      const accountUrl = accountUrlInput.value;
+      const qty = quantity.value;
+      const total = totalPrice.value;
+      const unit = totalUnit.textContent;
+      
+      // 获取当前时间
+      const now = new Date();
+      const dateTime = now.toLocaleString();
+      
+      // 创建订单记录HTML
+      const orderRecord = `
+        <div class="bg-white rounded-xl shadow-elevation-1 p-4 card-hover fade-in">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <h3 class="font-medium">${translations[currentLang]['orderHistory.title']} #${orderCounter}</h3>
+              <p class="text-xs text-gray-500">${dateTime}</p>
+            </div>
+            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" data-i18n="progressModal.processing">${translations[currentLang]['progressModal.processing']}</span>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <p class="text-xs text-gray-500" data-i18n="serviceOrder.category">${translations[currentLang]['serviceOrder.category']}</p>
+              <p class="text-sm font-medium">${categoryText}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500" data-i18n="serviceOrder.item">${translations[currentLang]['serviceOrder.item']}</p>
+              <p class="text-sm font-medium">${itemText}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500" data-i18n="serviceOrder.accountUrl">${translations[currentLang]['serviceOrder.accountUrl']}</p>
+              <p class="text-sm font-medium truncate" style="max-width: 150px;">${accountUrl}</p>
+            </div>
+            <div>
+              <p class="text-xs text-gray-500" data-i18n="serviceOrder.quantity">${translations[currentLang]['serviceOrder.quantity']}</p>
+              <p class="text-sm font-medium">${qty}</p>
+            </div>
+          </div>
+          
+          <div class="flex justify-between items-center pt-3 border-t border-gray-100">
+            <div>
+              <p class="text-xs text-gray-500" data-i18n="serviceOrder.totalPrice">${translations[currentLang]['serviceOrder.totalPrice']}</p>
+              <p class="text-lg font-bold text-primary">${total} ${unit}</p>
+            </div>
+            <div class="text-right">
+              <p class="text-xs text-gray-500" data-i18n="alerts.completedIn24hrs">${translations[currentLang]['alerts.completedIn24hrs']}</p>
+              <p class="text-sm font-medium">24${translations[currentLang]['footer.copyright'].includes('©') ? '小时内' : 'hrs'}</p>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // 如果是第一个订单，先清空"暂无订单记录"的提示
+      if (orderCounter === 1) {
+        orderList.innerHTML = '';
+      }
+      
+      // 添加订单记录到页面
+      orderList.insertAdjacentHTML('afterbegin', orderRecord);
+      
+      // 重置表单
+      orderForm.reset();
+      description.value = '';
+      gift.value = '0';
+      giftUnit.textContent = 'Galaxy';
+      totalPrice.value = '0';
+      totalUnit.textContent = 'Galaxy';
+      quantity.value = '1';
+      currentUnit = 'Galaxy';
+      // 重置图片显示
+      serviceImageContainer.classList.add('hidden');
+      
+      // 禁用下单按钮
+      orderBtn.setAttribute('disabled', 'true');
+      orderBtn.classList.add('btn-disabled');
+      
+      // 如果是TikTok类别，重置链接输入框为默认值
+      if (serviceCategory.value === 'tiktok') {
+        accountUrlInput.value = 'https://www.tiktok.com/@';
+      }
+    }
+    
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', () => {
+      // 初始化语言
+      initLanguage();
+      
+      // 触发一次服务类别变化事件，以确保默认选中TikTok时能正确加载数据
+      serviceCategory.dispatchEvent(new Event('change'));
+    });
+  </script>
+</body>
+</html>
