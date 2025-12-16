@@ -166,6 +166,7 @@
     <div class="container mx-auto px-4 py-3 flex justify-between items-center">
       <div class="flex items-center space-x-2">
         <i class="fa fa-shopping-cart text-primary text-xl"></i>
+        <!-- 关键修改：给标题添加data-i18n属性，用于多语言替换 -->
         <h1 class="text-lg font-bold" data-i18n="header.title">服务下单平台</h1>
       </div>
       
@@ -229,18 +230,12 @@
             <!-- 默认选中的TikTok服务项目 -->
             <div class="service-item-option p-2 border border-gray-300 rounded-lg flex flex-col items-center justify-center text-center service-item-selected" 
                  data-value="tiktok_followers_50" 
-                 data-description="为您的TikTok账号增加50个粉丝，提升账号影响力" 
-                 data-unit="Galaxy">
+                 data-unit="Cap"
+                 data-gift-value="1">
               <img src="photo/b2.png" alt="TikTok 50个粉丝" class="service-item-img mb-1">
               <span class="text-xs font-medium">TikTok 50个粉丝</span>
             </div>
           </div>
-        </div>
-        
-        <!-- 描述 -->
-        <div class="space-y-2">
-          <label for="description" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.description">服务描述</label>
-          <textarea id="description" rows="3" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 resize-none" readonly placeholder="选择服务项目后显示描述信息" data-i18n="serviceOrder.descriptionPlaceholder">为您的TikTok账号增加50个粉丝，提升账号影响力</textarea>
         </div>
         
         <!-- 账号/链接 -->
@@ -264,7 +259,7 @@
           <div class="relative">
             <input type="number" id="gift" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 input-focus" value="1" readonly>
             <div id="giftUnit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-              Galaxy
+              Cap
             </div>
           </div>
         </div>
@@ -289,7 +284,7 @@
           <div class="relative">
             <input type="number" id="totalPrice" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 font-bold text-primary input-focus" value="1" readonly>
             <div id="totalUnit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">
-              Galaxy
+              Cap
             </div>
           </div>
         </div>
@@ -448,8 +443,6 @@
         'serviceOrder.tiktokFollowers': 'TikTok 粉丝 1000 个',
         'serviceOrder.tiktokLikes': 'TikTok 视频点赞 100 个',
         'serviceOrder.tiktokShares': 'TikTok 视频分享 100 次',
-        'serviceOrder.description': '服务描述',
-        'serviceOrder.descriptionPlaceholder': '选择服务项目后显示描述信息',
         'serviceOrder.accountUrl': '账号 / 链接',
         'serviceOrder.accountPlaceholder': '填写要刷的链接或账号',
         'serviceOrder.tiktokHint': 'TikTok账号格式应为: https://www.tiktok.com/@用户名',
@@ -474,7 +467,33 @@
         'footer.aboutUs': '关于我们',
         'footer.aboutUsDesc': '提供高质量的社交媒体推广服务，帮助您快速提升账号影响力。',
         'footer.contact': '联系方式',
-        'footer.copyright': '© 2025 服务下单平台. 保留所有权利.'
+        'footer.copyright': '© 2025 服务下单平台. 保留所有权利.',
+        // 服务项目多语言配置
+        'service.tiktok_followers_1': 'TikTok 1个粉丝',
+        'service.tiktok_followers_10': 'TikTok 10个粉丝',
+        'service.tiktok_followers_50': 'TikTok 50个粉丝',
+        'service.tiktok_followers_100': 'TikTok 100个粉丝',
+        'service.tiktok_followers_300': 'TikTok 300个粉丝',
+        'service.tiktok_followers_700': 'TikTok 700个粉丝',
+        'service.tiktok_followers_1000': 'TikTok 1000个粉丝',
+        'service.tiktok_followers_25000': 'TikTok 25000个粉丝',
+        'service.instagram_followers_10': 'Instagram 10个粉丝',
+        'service.instagram_likes_10': 'Instagram 10个点赞',
+        'service.youtube_views_100': 'YouTube 100次播放',
+        'service.youtube_subscribers_10': 'YouTube 10个订阅者',
+        'service.facebook_likes_10': 'Facebook 10个点赞',
+        'service.facebook_followers_10': 'Facebook 10个粉丝',
+        // 礼物单位多语言
+        'unit.Rose': '玫瑰',
+        'unit.Doughnut': '甜甜圈',
+        'unit.Cap': '帽子',
+        'unit.Sunglasses': '墨镜',
+        'unit.Money Gun': '钞票枪',
+        'unit.Galaxy': '星系',
+        'unit.Future Encounter': '未来邂逅',
+        'unit.Lion': '狮子',
+        'unit.Swan': '天鹅',
+        'unit.Giraffe': '长颈鹿'
       },
       'en': {
         'header.title': 'Service Order Platform',
@@ -489,8 +508,6 @@
         'serviceOrder.tiktokFollowers': 'TikTok Followers 1000',
         'serviceOrder.tiktokLikes': 'TikTok Likes 100',
         'serviceOrder.tiktokShares': 'TikTok Shares 100',
-        'serviceOrder.description': 'Service Description',
-        'serviceOrder.descriptionPlaceholder': 'Description will be displayed after selecting a service item',
         'serviceOrder.accountUrl': 'Account / URL',
         'serviceOrder.accountPlaceholder': 'Enter the URL or account to boost',
         'serviceOrder.tiktokHint': 'TikTok account format should be: https://www.tiktok.com/@username',
@@ -515,7 +532,33 @@
         'footer.aboutUs': 'About Us',
         'footer.aboutUsDesc': 'Provide high-quality social media promotion services to help you quickly increase your account influence.',
         'footer.contact': 'Contact Us',
-        'footer.copyright': '© 2025 Service Order Platform. All rights reserved.'
+        'footer.copyright': '© 2025 Service Order Platform. All rights reserved.',
+        // 服务项目多语言配置
+        'service.tiktok_followers_1': 'TikTok 1 Follower',
+        'service.tiktok_followers_10': 'TikTok 10 Followers',
+        'service.tiktok_followers_50': 'TikTok 50 Followers',
+        'service.tiktok_followers_100': 'TikTok 100 Followers',
+        'service.tiktok_followers_300': 'TikTok 300 Followers',
+        'service.tiktok_followers_700': 'TikTok 700 Followers',
+        'service.tiktok_followers_1000': 'TikTok 1000 Followers',
+        'service.tiktok_followers_25000': 'TikTok 25000 Followers',
+        'service.instagram_followers_10': 'Instagram 10 Followers',
+        'service.instagram_likes_10': 'Instagram 10 Likes',
+        'service.youtube_views_100': 'YouTube 100 Views',
+        'service.youtube_subscribers_10': 'YouTube 10 Subscribers',
+        'service.facebook_likes_10': 'Facebook 10 Likes',
+        'service.facebook_followers_10': 'Facebook 10 Followers',
+        // 礼物单位多语言
+        'unit.Rose': 'Rose',
+        'unit.Doughnut': 'Doughnut',
+        'unit.Cap': 'Cap',
+        'unit.Sunglasses': 'Sunglasses',
+        'unit.Money Gun': 'Money Gun',
+        'unit.Galaxy': 'Galaxy',
+        'unit.Future Encounter': 'Future Encounter',
+        'unit.Lion': 'Lion',
+        'unit.Swan': 'Swan',
+        'unit.Giraffe': 'Giraffe'
       },
       'ar': {
         'header.title': 'منصة طلب الخدمات',
@@ -530,8 +573,6 @@
         'serviceOrder.tiktokFollowers': 'متابعي تيك توك 1000',
         'serviceOrder.tiktokLikes': 'إعجابات تيك توك 100',
         'serviceOrder.tiktokShares': 'مشاركات تيك توك 100',
-        'serviceOrder.description': 'وصف الخدمة',
-        'serviceOrder.descriptionPlaceholder': 'سيتم عرض الوصف بعد تحديد عنصر الخدمة',
         'serviceOrder.accountUrl': 'الحساب / الرابط',
         'serviceOrder.accountPlaceholder': 'أدخل الرابط أو الحساب لتحسينه',
         'serviceOrder.tiktokHint': 'شكل حساب تيك توك يجب أن يكون: https://www.tiktok.com/@اسم المستخدم',
@@ -556,8 +597,130 @@
         'footer.aboutUs': 'عن нами',
         'footer.aboutUsDesc': 'تقديم خدمات الترويج الاجتماعي عالية الجودة لمساعدتك في زيادة تأثير حسابك بسرعة.',
         'footer.contact': 'اتصل بنا',
-        'footer.copyright': '© 2025 منصة طلب الخدمات. جميع الحقوق محفوظة.'
+        'footer.copyright': '© 2025 منصة طلب الخدمات. جميع الحقوق محفوظة.',
+        // 服务项目多语言配置
+        'service.tiktok_followers_1': 'تيك توك 1 متابع',
+        'service.tiktok_followers_10': 'تيك توك 10 متابعين',
+        'service.tiktok_followers_50': 'تيك توك 50 متابعين',
+        'service.tiktok_followers_100': 'تيك توك 100 متابعين',
+        'service.tiktok_followers_300': 'تيك توك 300 متابعين',
+        'service.tiktok_followers_700': 'تيك توك 700 متابعين',
+        'service.tiktok_followers_1000': 'تيك توك 1000 متابع',
+        'service.tiktok_followers_25000': 'تيك توك 25000 متابع',
+        'service.instagram_followers_10': 'إنستغرام 10 متابعين',
+        'service.instagram_likes_10': 'إنستغرام 10 إعجابات',
+        'service.youtube_views_100': 'يوتيوب 100 مشاهدة',
+        'service.youtube_subscribers_10': 'يوتيوب 10 مشتركين',
+        'service.facebook_likes_10': 'فيسبوك 10 إعجابات',
+        'service.facebook_followers_10': 'فيسبوك 10 متابعين',
+        // 礼物单位多语言
+        'unit.Rose': 'وردة',
+        'unit.Doughnut': 'دونات',
+        'unit.Cap': 'قبعة',
+        'unit.Sunglasses': 'نظارات شمسية',
+        'unit.Money Gun': 'بندقية النقود',
+        'unit.Galaxy': 'مجرة',
+        'unit.Future Encounter': 'لقاء مستقبل',
+        'unit.Lion': 'أسد',
+        'unit.Swan': 'بجعة',
+        'unit.Giraffe': 'زرافة'
       }
+    };
+
+    // 服务项目配置（抽离出来方便维护）
+    const serviceConfig = {
+      tiktok: [
+        { 
+          value: 'tiktok_followers_1', 
+          image: 'photo/b8.png',
+          unit: 'Rose',
+          giftValue: '10'
+        },
+        { 
+          value: 'tiktok_followers_10', 
+          image: 'photo/b0.png',
+          unit: 'Doughnut',
+          giftValue: '1'
+        },
+        { 
+          value: 'tiktok_followers_50', 
+          image: 'photo/b2.png',
+          unit: 'Cap',
+          giftValue: '1'
+        },
+        { 
+          value: 'tiktok_followers_100', 
+          image: 'photo/b3.png',
+          unit: 'Sunglasses',
+          giftValue: '1'
+        },
+        { 
+          value: 'tiktok_followers_300', 
+          image: 'photo/b4.png',
+          unit: 'Money Gun',
+          giftValue: '1'
+        },
+        { 
+          value: 'tiktok_followers_700', 
+          image: 'photo/b5.png',
+          unit: 'Galaxy',
+          giftValue: '1'
+        },
+        { 
+          value: 'tiktok_followers_1000', 
+          image: 'photo/b6.png',
+          unit: 'Future Encounter',
+          giftValue: '1'
+        },
+        { 
+          value: 'tiktok_followers_25000', 
+          image: 'photo/b7.png',
+          unit: 'Lion',
+          giftValue: '1'
+        }
+      ],
+      instagram: [
+        { 
+          value: 'instagram_followers_10', 
+          image: 'photo/b1.png',
+          unit: 'Galaxy',
+          giftValue: '1'
+        },
+        { 
+          value: 'instagram_likes_10', 
+          image: 'photo/b1.png',
+          unit: 'Swan',
+          giftValue: '1'
+        }
+      ],
+      youtube: [
+        { 
+          value: 'youtube_views_100', 
+          image: 'photo/b1.png',
+          unit: 'Money Gun',
+          giftValue: '1'
+        },
+        { 
+          value: 'youtube_subscribers_10', 
+          image: 'photo/b1.png',
+          unit: 'Galaxy',
+          giftValue: '1'
+        }
+      ],
+      facebook: [
+        { 
+          value: 'facebook_likes_10', 
+          image: 'photo/b1.png',
+          unit: 'Swan',
+          giftValue: '1'
+        },
+        { 
+          value: 'facebook_followers_10', 
+          image: 'photo/b1.png',
+          unit: 'Giraffe',
+          giftValue: '1'
+        }
+      ]
     };
 
     // DOM元素
@@ -567,7 +730,6 @@
     const serviceSearch = document.getElementById('serviceSearch');
     const serviceItemsContainer = document.getElementById('serviceItemsContainer');
     const serviceItemValue = document.getElementById('serviceItemValue');
-    const description = document.getElementById('description');
     const gift = document.getElementById('gift');
     const giftUnit = document.getElementById('giftUnit');
     const quantity = document.getElementById('quantity');
@@ -588,7 +750,7 @@
     const tiktokHint = document.getElementById('tiktokHint');
     
     // 当前选中的单位
-    let currentUnit = 'Galaxy';
+    let currentUnit = 'Cap';
     // 订单计数器
     let orderCounter = 0;
     // 当前语言
@@ -602,6 +764,15 @@
         currentLang = savedLang;
       }
       updatePageLanguage();
+      // 额外更新页面标题（浏览器标签栏）
+      updateDocumentTitle();
+      // 刷新服务项目显示
+      renderServiceItems(serviceCategory.value);
+    }
+    
+    // 新增：更新浏览器标签栏的标题
+    function updateDocumentTitle() {
+      document.title = translations[currentLang]['header.title'];
     }
     
     // 更新页面语言
@@ -634,6 +805,76 @@
       
       // 保存语言偏好到localStorage
       localStorage.setItem('preferredLanguage', currentLang);
+      
+      // 同步更新浏览器标题
+      updateDocumentTitle();
+    }
+
+    // 渲染服务项目
+    function renderServiceItems(category) {
+      // 清空容器
+      serviceItemsContainer.innerHTML = '';
+      
+      // 重置隐藏输入框
+      serviceItemValue.value = '';
+      
+      let serviceOptions = [];
+      
+      // 根据类别获取服务配置
+      if (serviceConfig[category]) {
+        serviceOptions = serviceConfig[category];
+      }
+      
+      // TikTok 默认填充链接前缀和提示
+      if (category === 'tiktok') {
+        accountUrlInput.value = 'https://www.tiktok.com/@';
+        tiktokHint.classList.remove('hidden'); // 显示TikTok提示
+      } else {
+        accountUrlInput.value = '';
+        tiktokHint.classList.add('hidden'); // 隐藏TikTok提示
+      }
+      
+      // 添加服务项目选项
+      serviceOptions.forEach((option, index) => {
+        // 获取当前语言的服务项目文本
+        const serviceText = translations[currentLang][`service.${option.value}`] || option.value;
+        // 获取当前语言的单位文本
+        const unitText = translations[currentLang][`unit.${option.unit}`] || option.unit;
+        
+        const itemDiv = document.createElement('div');
+        itemDiv.className = `service-item-option p-2 border border-gray-300 rounded-lg flex flex-col items-center justify-center text-center ${index === 0 ? 'service-item-selected' : ''}`;
+        itemDiv.setAttribute('data-value', option.value);
+        itemDiv.setAttribute('data-unit', option.unit);
+        itemDiv.setAttribute('data-gift-value', option.giftValue); // 存储礼物数量
+        
+        itemDiv.innerHTML = `
+          <img src="${option.image}" alt="${serviceText}" class="service-item-img mb-1">
+          <span class="text-xs font-medium">${serviceText}</span>
+        `;
+        
+        serviceItemsContainer.appendChild(itemDiv);
+        
+        // 如果是第一个选项，设置为默认选中
+        if (index === 0) {
+          serviceItemValue.value = option.value;
+          gift.value = option.giftValue; // 设置礼物数量
+          giftUnit.textContent = unitText; // 设置礼物单位（多语言）
+          totalUnit.textContent = unitText; // 设置总价单位（多语言）
+          currentUnit = option.unit;
+        }
+      });
+      
+      // 初始化服务项目点击事件
+      initServiceItemsListener();
+      
+      // 重置数量为1
+      quantity.value = '1';
+      
+      // 计算总价
+      calculateTotal();
+      
+      // 检查表单是否可以提交
+      checkFormValidity();
     }
     
     // 语言选择下拉框切换
@@ -656,6 +897,8 @@
         if (lang !== currentLang && translations[lang]) {
           currentLang = lang;
           updatePageLanguage();
+          // 刷新服务项目显示
+          renderServiceItems(serviceCategory.value);
         }
         languageDropdown.classList.add('hidden');
       });
@@ -684,17 +927,20 @@
       
       // 获取数据
       const value = item.getAttribute('data-value');
-      const serviceDescription = item.getAttribute('data-description') || '';
-      currentUnit = item.getAttribute('data-unit') || 'Galaxy';
+      const unitKey = item.getAttribute('data-unit') || 'Cap';
+      const giftValue = item.getAttribute('data-gift-value') || '1'; // 获取礼物数量
+      
+      // 获取当前语言的单位文本
+      const unitText = translations[currentLang][`unit.${unitKey}`] || unitKey;
       
       // 更新隐藏输入框值
       serviceItemValue.value = value;
       
-      // 更新描述、价格和单位
-      description.value = serviceDescription;
-      gift.value = '1'; // 固定为1
-      giftUnit.textContent = currentUnit;
-      totalUnit.textContent = currentUnit;
+      // 更新礼物和单位（多语言）
+      gift.value = giftValue; // 设置礼物数量
+      giftUnit.textContent = unitText; // 设置礼物单位
+      totalUnit.textContent = unitText; // 设置总价单位
+      currentUnit = unitKey;
       
       // 重置数量为1
       quantity.value = '1';
@@ -775,174 +1021,7 @@
     
     // 服务类别变化事件
     serviceCategory.addEventListener('change', () => {
-      // 清空容器
-      serviceItemsContainer.innerHTML = '';
-      
-      // 重置隐藏输入框
-      serviceItemValue.value = '';
-      
-      // 根据选择的服务类别添加对应的服务项目
-      const category = serviceCategory.value;
-      let serviceOptions = [];
-      
-      // TikTok 默认填充链接前缀和提示
-      if (category === 'tiktok') {
-        accountUrlInput.value = 'https://www.tiktok.com/@';
-        tiktokHint.classList.remove('hidden'); // 显示TikTok提示
-        serviceOptions = [
-          // 新增的两个服务项目
-          { 
-            value: 'tiktok_followers_1', 
-            text: 'TikTok 1个粉丝', 
-            image: 'photo/b8.png',
-            description: '为您的TikTok账号增加1个粉丝，提升账号影响力', 
-            unit: 'Galaxy' 
-          },
-          { 
-            value: 'tiktok_followers_10', 
-            text: 'TikTok 10个粉丝', 
-            image: 'photo/b0.png',
-            description: '为您的TikTok账号增加10个粉丝，提升账号影响力', 
-            unit: 'Galaxy' 
-          },
-          // 原有服务项目
-          { 
-            value: 'tiktok_followers_50', 
-            text: 'TikTok 50个粉丝', 
-            image: 'photo/b2.png',
-            description: '为您的TikTok账号增加50个粉丝，提升账号影响力', 
-            unit: 'Galaxy' 
-          },
-          { 
-            value: 'tiktok_followers_100', 
-            text: 'TikTok 100个粉丝', 
-            image: 'photo/b3.png',
-            description: '为您的TikTok账号增加100个粉丝，提升账号影响力', 
-            unit: 'Galaxy' 
-          },
-          { 
-            value: 'tiktok_followers_300', 
-            text: 'TikTok 300个粉丝', 
-            image: 'photo/b4.png',
-            description: '为您的TikTok账号增加300个粉丝，提升账号影响力', 
-            unit: 'Galaxy' 
-          },
-          { 
-            value: 'tiktok_followers_700', 
-            text: 'TikTok 700个粉丝', 
-            image: 'photo/b5.png',
-            description: '为您的TikTok账号增加700个粉丝，提升账号影响力', 
-            unit: 'Galaxy' 
-          },
-          { 
-            value: 'tiktok_followers_1000', 
-            text: 'TikTok 1000个粉丝', 
-            image: 'photo/b6.png',
-            description: '为您的TikTok账号增加1000个粉丝，提升账号影响力', 
-            unit: 'Galaxy' 
-          },
-          { 
-            value: 'tiktok_followers_25000', 
-            text: 'TikTok 25000个粉丝', 
-            image: 'photo/b7.png',
-            description: '为您的TikTok账号增加25000个粉丝，大幅提升账号影响力', 
-            unit: 'Galaxy' 
-          }
-        ];
-      } else {
-        accountUrlInput.value = '';
-        tiktokHint.classList.add('hidden'); // 隐藏TikTok提示
-        if (category === 'instagram') {
-          serviceOptions = [
-            { 
-              value: 'instagram_followers_10', 
-              text: 'Instagram 10个粉丝', 
-              image: 'photo/b1.png',
-              description: '为您的Instagram账号增加10个粉丝，提升账号影响力', 
-              unit: 'Galaxy' 
-            },
-            { 
-              value: 'instagram_likes_10', 
-              text: 'Instagram 10个点赞', 
-              image: 'photo/b1.png',
-              description: '为您的Instagram帖子增加10个点赞，提升帖子受欢迎度', 
-              unit: 'Swan' 
-            }
-          ];
-        } else if (category === 'youtube') {
-          serviceOptions = [
-            { 
-              value: 'youtube_views_100', 
-              text: 'YouTube 100次播放', 
-              image: 'photo/b1.png',
-              description: '为您的YouTube视频提供100次播放量，提升视频曝光度', 
-              unit: 'Money Gun' 
-            },
-            { 
-              value: 'youtube_subscribers_10', 
-              text: 'YouTube 10个订阅者', 
-              image: 'photo/b1.png',
-              description: '为您的YouTube频道增加10个订阅者，提升频道影响力', 
-              unit: 'Galaxy' 
-            }
-          ];
-        } else if (category === 'facebook') {
-          serviceOptions = [
-            { 
-              value: 'facebook_likes_10', 
-              text: 'Facebook 10个点赞', 
-              image: 'photo/b1.png',
-              description: '为您的Facebook页面增加10个点赞，提升页面受欢迎度', 
-              unit: 'Swan' 
-            },
-            { 
-              value: 'facebook_followers_10', 
-              text: 'Facebook 10个粉丝', 
-              image: 'photo/b1.png',
-              description: '为您的Facebook账号增加10个粉丝，提升账号影响力', 
-              unit: 'Giraffe' 
-            }
-          ];
-        }
-      }
-      
-      // 添加服务项目选项
-      serviceOptions.forEach((option, index) => {
-        const itemDiv = document.createElement('div');
-        itemDiv.className = `service-item-option p-2 border border-gray-300 rounded-lg flex flex-col items-center justify-center text-center ${index === 0 ? 'service-item-selected' : ''}`;
-        itemDiv.setAttribute('data-value', option.value);
-        itemDiv.setAttribute('data-description', option.description);
-        itemDiv.setAttribute('data-unit', option.unit);
-        
-        itemDiv.innerHTML = `
-          <img src="${option.image}" alt="${option.text}" class="service-item-img mb-1">
-          <span class="text-xs font-medium">${option.text}</span>
-        `;
-        
-        serviceItemsContainer.appendChild(itemDiv);
-        
-        // 如果是第一个选项，设置为默认选中
-        if (index === 0) {
-          serviceItemValue.value = option.value;
-          description.value = option.description;
-          gift.value = '1';
-          giftUnit.textContent = option.unit;
-          totalUnit.textContent = option.unit;
-          currentUnit = option.unit;
-        }
-      });
-      
-      // 初始化服务项目点击事件
-      initServiceItemsListener();
-      
-      // 重置数量为1
-      quantity.value = '1';
-      
-      // 计算总价
-      calculateTotal();
-      
-      // 检查表单是否可以提交
-      checkFormValidity();
+      renderServiceItems(serviceCategory.value);
     });
     
     // 监听账号/链接输入变化
@@ -1022,14 +1101,17 @@
       
       // 获取订单信息
       const categoryText = serviceCategory.options[serviceCategory.selectedIndex].text;
+      // 处理类别文本的多语言（这里可以根据需要扩展，当前直接用选项文本）
+      const categoryTextI18n = translations[currentLang][`serviceCategory.${serviceCategory.value}`] || categoryText;
       const accountUrl = accountUrlInput.value;
       const qty = quantity.value;
       const total = totalPrice.value;
-      const unit = totalUnit.textContent;
+      const unitKey = currentUnit;
+      const unitText = translations[currentLang][`unit.${unitKey}`] || unitKey;
       
       // 获取当前时间
       const now = new Date();
-      const dateTime = now.toLocaleString();
+      const dateTime = now.toLocaleString(currentLang); // 根据当前语言显示时间格式
       
       // 创建订单记录HTML
       const orderRecord = `
@@ -1045,7 +1127,7 @@
           <div class="grid grid-cols-2 gap-3 mb-3">
             <div>
               <p class="text-xs text-gray-500" data-i18n="serviceOrder.category">${translations[currentLang]['serviceOrder.category']}</p>
-              <p class="text-sm font-medium">${categoryText}</p>
+              <p class="text-sm font-medium">${categoryTextI18n}</p>
             </div>
             <div>
               <p class="text-xs text-gray-500" data-i18n="serviceOrder.item">${translations[currentLang]['serviceOrder.item']}</p>
@@ -1064,11 +1146,11 @@
           <div class="flex justify-between items-center pt-3 border-t border-gray-100">
             <div>
               <p class="text-xs text-gray-500" data-i18n="serviceOrder.totalPrice">${translations[currentLang]['serviceOrder.totalPrice']}</p>
-              <p class="text-lg font-bold text-primary">${total} ${unit}</p>
+              <p class="text-lg font-bold text-primary">${total} ${unitText}</p>
             </div>
             <div class="text-right">
               <p class="text-xs text-gray-500" data-i18n="alerts.completedIn24hrs">${translations[currentLang]['alerts.completedIn24hrs']}</p>
-              <p class="text-sm font-medium">24${translations[currentLang]['footer.copyright'].includes('©') ? '小时内' : 'hrs'}</p>
+              <p class="text-sm font-medium">24${currentLang === 'zh-CN' ? '小时内' : currentLang === 'ar' ? 'ساعة' : 'hrs'}</p>
             </div>
           </div>
         </div>
@@ -1084,19 +1166,26 @@
       
       // 重置表单
       orderForm.reset();
-      description.value = '';
-      gift.value = '0';
-      giftUnit.textContent = 'Galaxy';
-      totalPrice.value = '0';
-      totalUnit.textContent = 'Galaxy';
+      // 重置礼物相关值为默认的Cap（50粉丝对应的配置）
+      gift.value = '1';
+      const capUnitText = translations[currentLang]['unit.Cap'] || 'Cap';
+      giftUnit.textContent = capUnitText;
+      totalPrice.value = '1';
+      totalUnit.textContent = capUnitText;
       quantity.value = '1';
-      currentUnit = 'Galaxy';
-      serviceItemValue.value = '';
+      currentUnit = 'Cap';
+      serviceItemValue.value = 'tiktok_followers_50';
       
-      // 重置服务项目选中状态
-      const firstItem = serviceItemsContainer.querySelector('.service-item-option');
-      if (firstItem) {
-        selectServiceItem(firstItem);
+      // 重置服务项目选中状态为50粉丝的选项
+      const defaultItem = serviceItemsContainer.querySelector('[data-value="tiktok_followers_50"]');
+      if (defaultItem) {
+        selectServiceItem(defaultItem);
+      } else {
+        // 备用：选中第一个选项
+        const firstItem = serviceItemsContainer.querySelector('.service-item-option');
+        if (firstItem) {
+          selectServiceItem(firstItem);
+        }
       }
       
       // 如果是TikTok类别，重置链接输入框为默认值
