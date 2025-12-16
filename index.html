@@ -228,11 +228,11 @@
           <div id="serviceItemsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-60 overflow-y-auto p-2 border border-gray-300 rounded-lg">
             <!-- 默认选中的TikTok服务项目 -->
             <div class="service-item-option p-2 border border-gray-300 rounded-lg flex flex-col items-center justify-center text-center service-item-selected" 
-                 data-value="tiktok_followers_10" 
-                 data-description="为您的TikTok账号增加10个粉丝，提升账号影响力" 
+                 data-value="tiktok_followers_50" 
+                 data-description="为您的TikTok账号增加50个粉丝，提升账号影响力" 
                  data-unit="Galaxy">
-              <img src="photo/b1.png" alt="TikTok 10个粉丝" class="service-item-img mb-1">
-              <span class="text-xs font-medium">TikTok 10个粉丝</span>
+              <img src="photo/b2.png" alt="TikTok 50个粉丝" class="service-item-img mb-1">
+              <span class="text-xs font-medium">TikTok 50个粉丝</span>
             </div>
           </div>
         </div>
@@ -240,7 +240,7 @@
         <!-- 描述 -->
         <div class="space-y-2">
           <label for="description" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.description">服务描述</label>
-          <textarea id="description" rows="3" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 resize-none" readonly placeholder="选择服务项目后显示描述信息" data-i18n="serviceOrder.descriptionPlaceholder">为您的TikTok账号增加10个粉丝，提升账号影响力</textarea>
+          <textarea id="description" rows="3" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 resize-none" readonly placeholder="选择服务项目后显示描述信息" data-i18n="serviceOrder.descriptionPlaceholder">为您的TikTok账号增加50个粉丝，提升账号影响力</textarea>
         </div>
         
         <!-- 账号/链接 -->
@@ -791,32 +791,46 @@
         tiktokHint.classList.remove('hidden'); // 显示TikTok提示
         serviceOptions = [
           { 
-            value: 'tiktok_followers_10', 
-            text: 'TikTok 10个粉丝', 
-            image: 'photo/b1.png',
-            description: '为您的TikTok账号增加10个粉丝，提升账号影响力', 
+            value: 'tiktok_followers_50', 
+            text: 'TikTok 50个粉丝', 
+            image: 'photo/b2.png',
+            description: '为您的TikTok账号增加50个粉丝，提升账号影响力', 
             unit: 'Galaxy' 
           },
           { 
-            value: 'tiktok_views_100', 
-            text: 'TikTok 100次播放', 
-            image: 'photo/b1.png',
-            description: '为您的TikTok视频提供100次真人播放量，提升视频曝光度', 
-            unit: 'Money Gun' 
+            value: 'tiktok_followers_100', 
+            text: 'TikTok 100个粉丝', 
+            image: 'photo/b3.png',
+            description: '为您的TikTok账号增加100个粉丝，提升账号影响力', 
+            unit: 'Galaxy' 
           },
           { 
-            value: 'tiktok_likes_10', 
-            text: 'TikTok 10个点赞', 
-            image: 'photo/b1.png',
-            description: '为您的TikTok视频增加10个点赞，提升视频受欢迎度', 
-            unit: 'Swan' 
+            value: 'tiktok_followers_300', 
+            text: 'TikTok 300个粉丝', 
+            image: 'photo/b4.png',
+            description: '为您的TikTok账号增加300个粉丝，提升账号影响力', 
+            unit: 'Galaxy' 
           },
           { 
-            value: 'tiktok_shares_10', 
-            text: 'TikTok 10次分享', 
-            image: 'photo/b1.png',
-            description: '为您的TikTok视频增加10次分享，扩大视频传播范围', 
-            unit: 'Giraffe' 
+            value: 'tiktok_followers_700', 
+            text: 'TikTok 700个粉丝', 
+            image: 'photo/b5.png',
+            description: '为您的TikTok账号增加700个粉丝，提升账号影响力', 
+            unit: 'Galaxy' 
+          },
+          { 
+            value: 'tiktok_followers_1000', 
+            text: 'TikTok 1000个粉丝', 
+            image: 'photo/b6.png',
+            description: '为您的TikTok账号增加1000个粉丝，提升账号影响力', 
+            unit: 'Galaxy' 
+          },
+          { 
+            value: 'tiktok_followers_25000', 
+            text: 'TikTok 25000个粉丝', 
+            image: 'photo/b7.png',
+            description: '为您的TikTok账号增加25000个粉丝，大幅提升账号影响力', 
+            unit: 'Galaxy' 
           }
         ];
       } else {
@@ -1087,7 +1101,7 @@
       serviceCategory.dispatchEvent(new Event('change'));
       
       // 设置初始值
-      serviceItemValue.value = 'tiktok_followers_10';
+      serviceItemValue.value = 'tiktok_followers_50';
       calculateTotal();
       checkFormValidity();
     });
