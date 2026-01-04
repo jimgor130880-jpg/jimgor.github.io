@@ -1,1215 +1,294 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>服务下单平台</title>
-  <!-- 引入外部资源 -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  
-  <!-- Tailwind配置 -->
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          colors: {
-            primary: '#FF3A3A',
-            secondary: '#4A6CF7',
-            dark: '#1D2939',
-            light: '#F9FAFB',
-            gray: {
-              100: '#F3F4F6',
-              200: '#E5E7EB',
-              300: '#D1D5DB',
-              400: '#9CA3AF',
-              500: '#6B7280',
-              600: '#4B5563',
-              700: '#374151',
-              800: '#1F2937',
-              900: '#111827'
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>卡通号码抽奖机 🎉</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Comic Sans MS", "幼圆", "微软雅黑", sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* 标题样式 */
+        .title {
+            font-size: 2.5rem;
+            color: #ff6b8b;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+            animation: bounce 2s infinite alternate;
+        }
+
+        /* 抽奖容器 */
+        .lottery-container {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(255, 107, 139, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 5px dashed #ffb6c1;
+        }
+
+        /* 号码显示区域 */
+        .number-display {
+            width: 280px;
+            height: 280px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.1),
+                        0 8px 16px rgba(132, 250, 176, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 号码数字样式 */
+        .lottery-number {
+            font-size: 6rem;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow: 3px 3px 6px rgba(0,0,0,0.2);
+            transition: all 0.1s ease;
+        }
+
+        /* 已抽号码展示区 */
+        .drawn-numbers {
+            margin-top: 20px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .drawn-title {
+            font-size: 1.2rem;
+            color: #ff6b8b;
+            margin-bottom: 10px;
+        }
+
+        .numbers-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .drawn-item {
+            background: #ffd6e0;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #ff477e;
+            font-weight: bold;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* 按钮样式 */
+        .lottery-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            color: white;
+            background: linear-gradient(135deg, #ff6b8b 0%, #ff477e 100%);
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(255, 71, 126, 0.3);
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .lottery-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 71, 126, 0.4);
+        }
+
+        .lottery-btn:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 重置按钮 */
+        .reset-btn {
+            padding: 10px 25px;
+            font-size: 1rem;
+            color: #ff6b8b;
+            background: white;
+            border: 2px solid #ffb6c1;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .reset-btn:hover {
+            background: #ffd6e0;
+            color: #ff477e;
+        }
+
+        /* 动画效果 */
+        @keyframes bounce {
+            from {
+                transform: translateY(0);
             }
-          },
-          fontFamily: {
-            inter: ['Inter', 'sans-serif']
-          },
-          boxShadow: {
-            'elevation-1': '0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)',
-            'elevation-2': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
-            'elevation-3': '0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23)'
-          }
+            to {
+                transform: translateY(-10px);
+            }
         }
-      }
-    }
-  </script>
-  
-  <!-- 自定义工具类 -->
-  <style type="text/tailwindcss">
-    @layer utilities {
-      .content-auto {
-        content-visibility: auto;
-      }
-      .input-focus {
-        @apply focus:border-secondary focus:ring-2 focus:ring-secondary/20 transition-all duration-200;
-      }
-      .btn-hover {
-        @apply hover:shadow-elevation-2 transform hover:-translate-y-0.5 transition-all duration-200;
-      }
-      .card-hover {
-        @apply hover:shadow-elevation-2 transition-all duration-300;
-      }
-      .btn-disabled {
-        @apply bg-gray-300 cursor-not-allowed hover:shadow-none hover:-translate-y-0;
-      }
-      .service-item-selected {
-        @apply border-primary ring-2 ring-primary/20;
-      }
-    }
-  </style>
-  
-  <!-- 自定义样式 -->
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background-color: #FAFAFA;
-    }
-    
-    /* 自定义滚动条 */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    
-    ::-webkit-scrollbar-track {
-      background: #f1f1f1;
-      border-radius: 10px;
-    }
-    
-    ::-webkit-scrollbar-thumb {
-      background: #c1c1c1;
-      border-radius: 10px;
-    }
-    
-    ::-webkit-scrollbar-thumb:hover {
-      background: #a1a1a1;
-    }
-    
-    /* 数字输入框美化 */
-    input[type="number"]::-webkit-inner-spin-button,
-    input[type="number"]::-webkit-outer-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-    
-    /* 动画效果 */
-    .fade-in {
-      animation: fadeIn 0.3s ease-in-out;
-    }
-    
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    
-    /* 进度条动画 - 加快一倍 */
-    @keyframes progress {
-      0% { width: 0%; }
-      100% { width: 100%; }
-    }
-    
-    .progress-animation {
-      animation: progress 0.75s ease-in-out forwards; /* 从1.5s改为0.75s */
-    }
-    
-    /* RTL 布局支持 */
-    body.rtl {
-      direction: rtl;
-      text-align: right;
-    }
-    
-    body.rtl .flex-rtl {
-      flex-direction: row-reverse;
-    }
-    
-    body.rtl .mr-2 {
-      margin-right: 0 !important;
-      margin-left: 0.5rem !important;
-    }
-    
-    body.rtl .ml-2 {
-      margin-left: 0 !important;
-      margin-right: 0.5rem !important;
-    }
-    
-    /* 服务项目图片样式 */
-    .service-item-img {
-      width: 60px;
-      height: 60px;
-      object-fit: cover;
-      border-radius: 8px;
-    }
-    
-    .service-item-option {
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-    
-    .service-item-option:hover {
-      background-color: #f9fafb;
-    }
-  </style>
+
+        /* 响应式适配 */
+        @media (max-width: 500px) {
+            .title {
+                font-size: 1.8rem;
+            }
+            .number-display {
+                width: 200px;
+                height: 200px;
+            }
+            .lottery-number {
+                font-size: 4rem;
+            }
+            .lottery-btn {
+                padding: 12px 30px;
+                font-size: 1rem;
+            }
+        }
+    </style>
 </head>
+<body>
+    <h1 class="title">🎀 1-34 卡通号码抽奖 🎀</h1>
+    <div class="lottery-container">
+        <!-- 号码显示圆 -->
+        <div class="number-display">
+            <span class="lottery-number" id="currentNumber">?</span>
+        </div>
 
-<body class="min-h-screen bg-light font-inter text-dark">
-  <!-- 顶部导航栏 -->
-  <header class="sticky top-0 z-50 bg-white shadow-elevation-1">
-    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-      <div class="flex items-center space-x-2">
-        <i class="fa fa-shopping-cart text-primary text-xl"></i>
-        <!-- 关键修改：给标题添加data-i18n属性，用于多语言替换 -->
-        <h1 class="text-lg font-bold" data-i18n="header.title">服务下单平台</h1>
-      </div>
-      
-      <!-- 语言选择下拉框 -->
-      <div class="relative">
-        <button id="languageBtn" class="flex items-center space-x-1 text-sm text-gray-600 hover:text-primary transition-colors">
-          <span data-i18n="header.language">中文</span>
-          <i class="fa fa-chevron-down text-xs"></i>
-        </button>
-        
-        <div id="languageDropdown" class="hidden absolute right-0 mt-2 w-36 bg-white rounded-lg shadow-elevation-2 overflow-hidden z-50">
-          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" data-lang="zh-CN">中文</a>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" data-lang="en">English</a>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-primary/10 hover:text-primary transition-colors" data-lang="ar">العربية</a>
-        </div>
-      </div>
-    </div>
-  </header>
+        <!-- 抽奖按钮（文字修改为开始抽号） -->
+        <button class="lottery-btn" id="lotteryBtn">开始抽号 🎉</button>
 
-  <!-- 主内容区 -->
-  <main class="container mx-auto px-4 py-6">
-    <!-- 服务卡片 -->
-    <div class="bg-white rounded-xl shadow-elevation-1 p-5 mb-6 card-hover">
-      <h2 class="text-lg font-bold mb-4" data-i18n="serviceOrder.title">服务订单</h2>
-      
-      <form id="orderForm" class="space-y-5">
-        <!-- 服务类别 -->
-        <div class="space-y-2">
-          <label for="serviceCategory" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.category">服务类别 <span class="text-primary">*</span></label>
-          <div class="relative">
-            <select id="serviceCategory" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-white appearance-none input-focus" required>
-              <option value="" data-i18n="serviceOrder.selectCategory">请选择服务类别</option>
-              <option value="tiktok" selected>TikTok</option> <!-- 默认选中TikTok -->
-              <option value="instagram">Instagram</option>
-              <option value="youtube">YouTube</option>
-              <option value="facebook">Facebook</option>
-            </select>
-            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-              <i class="fa fa-chevron-down text-gray-400"></i>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 服务项目 (带图片展示) -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.item">服务项目 <span class="text-primary">*</span></label>
-          
-          <!-- 搜索框 -->
-          <div class="relative mb-2">
-            <input type="text" id="serviceSearch" placeholder="搜索服务项目..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 input-focus" data-i18n="serviceOrder.searchPlaceholder">
-            <div class="absolute left-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
-              <i class="fa fa-search text-gray-400"></i>
-            </div>
-          </div>
-          
-          <!-- 隐藏的服务项目值存储 -->
-          <input type="hidden" id="serviceItemValue" value="">
-          
-          <!-- 服务项目图片展示区 -->
-          <div id="serviceItemsContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-60 overflow-y-auto p-2 border border-gray-300 rounded-lg">
-            <!-- 默认选中的TikTok服务项目 -->
-            <div class="service-item-option p-2 border border-gray-300 rounded-lg flex flex-col items-center justify-center text-center service-item-selected" 
-                 data-value="tiktok_followers_50" 
-                 data-unit="Cap"
-                 data-gift-value="1">
-              <img src="photo/b2.png" alt="TikTok 50个粉丝" class="service-item-img mb-1">
-              <span class="text-xs font-medium">TikTok 50个粉丝</span>
-            </div>
-          </div>
-        </div>
-        
-        <!-- 账号/链接 -->
-        <div class="space-y-2">
-          <label for="accountUrl" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.accountUrl">账号 / 链接 <span class="text-primary">*</span></label>
-          <div class="relative">
-            <input type="text" id="accountUrl" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 input-focus" placeholder="填写要刷的链接或账号" required value="https://www.tiktok.com/@" data-i18n="serviceOrder.accountPlaceholder">
-            <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-              <i class="fa fa-link"></i>
-            </div>
-          </div>
-          <!-- TikTok 专用提示 -->
-          <p id="tiktokHint" class="text-xs text-gray-500" data-i18n="serviceOrder.tiktokHint">
-            <i class="fa fa-info-circle"></i> TikTok账号格式应为: https://www.tiktok.com/@用户名
-          </p>
-        </div>
-        
-        <!-- 礼物 -->
-        <div class="space-y-2">
-          <label for="gift" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.gift">礼物</label>
-          <div class="relative">
-            <input type="number" id="gift" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 input-focus" value="1" readonly>
-            <div id="giftUnit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-              Cap
-            </div>
-          </div>
-        </div>
-        
-        <!-- 数量选择器 -->
-        <div class="space-y-2">
-          <label class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.quantity">数量 <span class="text-primary">*</span></label>
-          <div class="flex items-center">
-            <button type="button" id="decreaseBtn" class="w-10 h-10 flex items-center justify-center rounded-l-lg border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
-              <i class="fa fa-minus"></i>
-            </button>
-            <input type="number" id="quantity" class="w-full h-10 px-4 text-center border-t border-b border-gray-300 input-focus" value="1" min="1" required>
-            <button type="button" id="increaseBtn" class="w-10 h-10 flex items-center justify-center rounded-r-lg border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
-              <i class="fa fa-plus"></i>
-            </button>
-          </div>
-        </div>
-        
-        <!-- 总价 -->
-        <div class="space-y-2">
-          <label for="totalPrice" class="block text-sm font-medium text-gray-700" data-i18n="serviceOrder.totalPrice">总价</label>
-          <div class="relative">
-            <input type="number" id="totalPrice" class="w-full px-4 py-2.5 rounded-lg border border-gray-300 bg-gray-50 font-bold text-primary input-focus" value="1" readonly>
-            <div id="totalUnit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-bold">
-              Cap
-            </div>
-          </div>
-        </div>
-        
-        <!-- 下单按钮 -->
-        <button type="submit" id="orderBtn" class="w-full py-3 px-4 bg-primary text-white font-medium rounded-lg shadow-md btn-hover flex items-center justify-center">
-          <i class="fa fa-shopping-cart mr-2"></i>
-          <span data-i18n="serviceOrder.submit">下单</span>
-        </button>
-      </form>
-    </div>
-    
-    <!-- 推荐服务 -->
-    <div class="mb-6">
-      <h2 class="text-lg font-bold mb-4" data-i18n="recommendedServices.title">推荐服务</h2>
-      
-      <div class="grid grid-cols-2 gap-4">
-        <!-- 推荐服务卡片 1 -->
-        <div class="bg-white rounded-xl shadow-elevation-1 p-4 card-hover">
-          <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-3">
-            <i class="fa fa-play text-primary"></i>
-          </div>
-          <h3 class="font-medium text-sm mb-1" data-i18n="recommendedServices.tiktokPackage">TikTok播放量套餐</h3>
-          <p class="text-xs text-gray-500 mb-2" data-i18n="recommendedServices.tiktokPackageDesc">5000次播放 + 100点赞</p>
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-primary">1 <span class="text-sm">Money Gun</span></span>
-            <button class="text-xs text-secondary hover:text-secondary/80 transition-colors" data-i18n="recommendedServices.select">选择</button>
-          </div>
-        </div>
-        
-        <!-- 推荐服务卡片 2 -->
-        <div class="bg-white rounded-xl shadow-elevation-1 p-4 card-hover">
-          <div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-3">
-            <i class="fa fa-user-plus text-secondary"></i>
-          </div>
-          <h3 class="font-medium text-sm mb-1" data-i18n="recommendedServices.followerPackage">粉丝增长套餐</h3>
-          <p class="text-xs text-gray-500 mb-2" data-i18n="recommendedServices.followerPackageDesc">2000粉丝 + 500播放</p>
-          <div class="flex justify-between items-center">
-            <span class="font-bold text-primary">1 <span class="text-sm">Galaxy</span></span>
-            <button class="text-xs text-secondary hover:text-secondary/80 transition-colors" data-i18n="recommendedServices.select">选择</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <!-- 订单进度弹窗 -->
-    <div id="progressModal" class="fixed inset-0 bg-black/50 z-50 hidden items-center justify-center">
-      <div class="bg-white rounded-xl shadow-elevation-3 p-6 max-w-md w-full mx-4 transform transition-all fade-in">
-        <div class="text-center">
-          <h3 class="text-lg font-bold mb-4" data-i18n="progressModal.title">处理中...</h3>
-          
-          <!-- 进度条 -->
-          <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
-            <div id="progressBar" class="bg-primary h-2.5 rounded-full progress-animation"></div>
-          </div>
-          
-          <p id="progressText" class="text-gray-600 mb-6" data-i18n="progressModal.processing">正在处理您的订单，请稍候...</p>
-        </div>
-      </div>
-    </div>
-    
-    <!-- 订单完成提示 -->
-    <div id="successAlert" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden fade-in">
-      <div class="flex items-center">
-        <i class="fa fa-check-circle mr-2 text-xl"></i>
-        <div>
-          <p class="font-medium" data-i18n="alerts.orderConfirmed">Order confirmed!</p>
-          <p class="text-sm" data-i18n="alerts.completedIn24hrs">Completed in 24hrs. Please wait</p>
-        </div>
-      </div>
-    </div>
-    
-    <!-- 错误提示 -->
-    <div id="errorAlert" class="fixed top-20 left-1/2 transform -translate-x-1/2 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 hidden fade-in">
-      <div class="flex items-center">
-        <i class="fa fa-exclamation-circle mr-2 text-xl"></i>
-        <div>
-          <p class="font-medium" data-i18n="alerts.inputError">输入错误</p>
-          <p id="errorMessage" class="text-sm" data-i18n="alerts.checkInput">请检查您的输入信息</p>
-        </div>
-      </div>
-    </div>
-  </main>
+        <!-- 重置按钮 -->
+        <button class="reset-btn" id="resetBtn">重置所有号码 🔄</button>
 
-  <!-- 订单记录区域 -->
-  <section id="orderHistory" class="container mx-auto px-4 py-6 mb-8">
-    <h2 class="text-lg font-bold mb-4" data-i18n="orderHistory.title">订单记录</h2>
-    <div id="orderList" class="space-y-4">
-      <!-- 订单记录将在这里动态添加 -->
-      <div class="text-center text-gray-500 py-8">
-        <i class="fa fa-history text-4xl mb-2"></i>
-        <p data-i18n="orderHistory.noOrders">暂无订单记录</p>
-      </div>
+        <!-- 已抽号码展示 -->
+        <div class="drawn-numbers">
+            <h3 class="drawn-title">已抽取的号码：</h3>
+            <div class="numbers-list" id="drawnNumbersList"></div>
+        </div>
     </div>
-  </section>
 
-  <!-- 页脚 -->
-  <footer class="bg-dark text-white py-6">
-    <div class="container mx-auto px-4">
-      <div class="grid grid-cols-2 gap-6 mb-6">
-        <div>
-          <h3 class="text-sm font-bold mb-3 uppercase" data-i18n="footer.aboutUs">关于我们</h3>
-          <p class="text-xs text-gray-400" data-i18n="footer.aboutUsDesc">提供高质量的社交媒体推广服务，帮助您快速提升账号影响力。</p>
-        </div>
-        
-        <div>
-          <h3 class="text-sm font-bold mb-3 uppercase" data-i18n="footer.contact">联系方式</h3>
-          <div class="space-y-2 text-xs text-gray-400">
-            <div class="flex items-center">
-              <i class="fa fa-envelope-o mr-2"></i>
-              <span>support@example.com</span>
-            </div>
-            <div class="flex items-center">
-              <i class="fa fa-phone mr-2"></i>
-              <span>+123 456 7890</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <div class="border-t border-gray-800 pt-4 flex flex-col md:flex-row justify-between items-center">
-        <p class="text-xs text-gray-500 mb-3 md:mb-0" data-i18n="footer.copyright">© 2025 服务下单平台. 保留所有权利.</p>
-        
-        <div class="flex space-x-4">
-          <a href="#" class="text-gray-400 hover:text-white transition-colors">
-            <i class="fa fa-facebook"></i>
-          </a>
-          <a href="#" class="text-gray-400 hover:text-white transition-colors">
-            <i class="fa fa-twitter"></i>
-          </a>
-          <a href="#" class="text-gray-400 hover:text-white transition-colors">
-            <i class="fa fa-instagram"></i>
-          </a>
-          <a href="#" class="text-gray-400 hover:text-white transition-colors">
-            <i class="fa fa-telegram"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-  </footer>
+    <script>
+        // 获取DOM元素
+        const lotteryBtn = document.getElementById('lotteryBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const currentNumber = document.getElementById('currentNumber');
+        const drawnNumbersList = document.getElementById('drawnNumbersList');
 
-  <!-- JavaScript -->
-  <script>
-    // 多语言映射表
-    const translations = {
-      'zh-CN': {
-        'header.title': '服务下单平台',
-        'header.language': '中文',
-        'serviceOrder.title': '服务订单',
-        'serviceOrder.category': '服务类别',
-        'serviceOrder.selectCategory': '请选择服务类别',
-        'serviceOrder.item': '服务项目',
-        'serviceOrder.searchPlaceholder': '搜索服务项目...',
-        'serviceOrder.selectItem': '请选择服务项目',
-        'serviceOrder.tiktokViews': 'TikTok 真人播放量 1000 次',
-        'serviceOrder.tiktokFollowers': 'TikTok 粉丝 1000 个',
-        'serviceOrder.tiktokLikes': 'TikTok 视频点赞 100 个',
-        'serviceOrder.tiktokShares': 'TikTok 视频分享 100 次',
-        'serviceOrder.accountUrl': '账号 / 链接',
-        'serviceOrder.accountPlaceholder': '填写要刷的链接或账号',
-        'serviceOrder.tiktokHint': 'TikTok账号格式应为: https://www.tiktok.com/@用户名',
-        'serviceOrder.gift': '礼物',
-        'serviceOrder.quantity': '数量',
-        'serviceOrder.totalPrice': '总价',
-        'serviceOrder.submit': '下单',
-        'recommendedServices.title': '推荐服务',
-        'recommendedServices.tiktokPackage': 'TikTok播放量套餐',
-        'recommendedServices.tiktokPackageDesc': '5000次播放 + 100点赞',
-        'recommendedServices.followerPackage': '粉丝增长套餐',
-        'recommendedServices.followerPackageDesc': '2000粉丝 + 500播放',
-        'recommendedServices.select': '选择',
-        'progressModal.title': '处理中...',
-        'progressModal.processing': '正在处理您的订单，请稍候...',
-        'alerts.orderConfirmed': '订单已确认!',
-        'alerts.completedIn24hrs': '24小时内完成，请等待',
-        'alerts.inputError': '输入错误',
-        'alerts.checkInput': '请检查您的输入信息',
-        'orderHistory.title': '订单记录',
-        'orderHistory.noOrders': '暂无订单记录',
-        'footer.aboutUs': '关于我们',
-        'footer.aboutUsDesc': '提供高质量的社交媒体推广服务，帮助您快速提升账号影响力。',
-        'footer.contact': '联系方式',
-        'footer.copyright': '© 2025 服务下单平台. 保留所有权利.',
-        // 服务项目多语言配置
-        'service.tiktok_followers_1': 'TikTok 1个粉丝',
-        'service.tiktok_followers_10': 'TikTok 10个粉丝',
-        'service.tiktok_followers_50': 'TikTok 50个粉丝',
-        'service.tiktok_followers_100': 'TikTok 100个粉丝',
-        'service.tiktok_followers_300': 'TikTok 300个粉丝',
-        'service.tiktok_followers_700': 'TikTok 700个粉丝',
-        'service.tiktok_followers_1000': 'TikTok 1000个粉丝',
-        'service.tiktok_followers_25000': 'TikTok 25000个粉丝',
-        'service.instagram_followers_10': 'Instagram 10个粉丝',
-        'service.instagram_likes_10': 'Instagram 10个点赞',
-        'service.youtube_views_100': 'YouTube 100次播放',
-        'service.youtube_subscribers_10': 'YouTube 10个订阅者',
-        'service.facebook_likes_10': 'Facebook 10个点赞',
-        'service.facebook_followers_10': 'Facebook 10个粉丝',
-        // 礼物单位多语言
-        'unit.Rose': '玫瑰',
-        'unit.Doughnut': '甜甜圈',
-        'unit.Cap': '帽子',
-        'unit.Sunglasses': '墨镜',
-        'unit.Money Gun': '钞票枪',
-        'unit.Galaxy': '星系',
-        'unit.Future Encounter': '未来邂逅',
-        'unit.Lion': '狮子',
-        'unit.Swan': '天鹅',
-        'unit.Giraffe': '长颈鹿'
-      },
-      'en': {
-        'header.title': 'Service Order Platform',
-        'header.language': 'English',
-        'serviceOrder.title': 'Service Order',
-        'serviceOrder.category': 'Service Category',
-        'serviceOrder.selectCategory': 'Please select service category',
-        'serviceOrder.item': 'Service Item',
-        'serviceOrder.searchPlaceholder': 'Search service items...',
-        'serviceOrder.selectItem': 'Please select service item',
-        'serviceOrder.tiktokViews': 'TikTok Real Views 1000',
-        'serviceOrder.tiktokFollowers': 'TikTok Followers 1000',
-        'serviceOrder.tiktokLikes': 'TikTok Likes 100',
-        'serviceOrder.tiktokShares': 'TikTok Shares 100',
-        'serviceOrder.accountUrl': 'Account / URL',
-        'serviceOrder.accountPlaceholder': 'Enter the URL or account to boost',
-        'serviceOrder.tiktokHint': 'TikTok account format should be: https://www.tiktok.com/@username',
-        'serviceOrder.gift': 'Gift',
-        'serviceOrder.quantity': 'Quantity',
-        'serviceOrder.totalPrice': 'Total Price',
-        'serviceOrder.submit': 'Place Order',
-        'recommendedServices.title': 'Recommended Services',
-        'recommendedServices.tiktokPackage': 'TikTok Views Package',
-        'recommendedServices.tiktokPackageDesc': '5000 Views + 100 Likes',
-        'recommendedServices.followerPackage': 'Follower Growth Package',
-        'recommendedServices.followerPackageDesc': '2000 Followers + 500 Views',
-        'recommendedServices.select': 'Select',
-        'progressModal.title': 'Processing...',
-        'progressModal.processing': 'Processing your order, please wait...',
-        'alerts.orderConfirmed': 'Order confirmed!',
-        'alerts.completedIn24hrs': 'Completed in 24hrs. Please wait',
-        'alerts.inputError': 'Input Error',
-        'alerts.checkInput': 'Please check your input information',
-        'orderHistory.title': 'Order History',
-        'orderHistory.noOrders': 'No order records',
-        'footer.aboutUs': 'About Us',
-        'footer.aboutUsDesc': 'Provide high-quality social media promotion services to help you quickly increase your account influence.',
-        'footer.contact': 'Contact Us',
-        'footer.copyright': '© 2025 Service Order Platform. All rights reserved.',
-        // 服务项目多语言配置
-        'service.tiktok_followers_1': 'TikTok 1 Follower',
-        'service.tiktok_followers_10': 'TikTok 10 Followers',
-        'service.tiktok_followers_50': 'TikTok 50 Followers',
-        'service.tiktok_followers_100': 'TikTok 100 Followers',
-        'service.tiktok_followers_300': 'TikTok 300 Followers',
-        'service.tiktok_followers_700': 'TikTok 700 Followers',
-        'service.tiktok_followers_1000': 'TikTok 1000 Followers',
-        'service.tiktok_followers_25000': 'TikTok 25000 Followers',
-        'service.instagram_followers_10': 'Instagram 10 Followers',
-        'service.instagram_likes_10': 'Instagram 10 Likes',
-        'service.youtube_views_100': 'YouTube 100 Views',
-        'service.youtube_subscribers_10': 'YouTube 10 Subscribers',
-        'service.facebook_likes_10': 'Facebook 10 Likes',
-        'service.facebook_followers_10': 'Facebook 10 Followers',
-        // 礼物单位多语言
-        'unit.Rose': 'Rose',
-        'unit.Doughnut': 'Doughnut',
-        'unit.Cap': 'Cap',
-        'unit.Sunglasses': 'Sunglasses',
-        'unit.Money Gun': 'Money Gun',
-        'unit.Galaxy': 'Galaxy',
-        'unit.Future Encounter': 'Future Encounter',
-        'unit.Lion': 'Lion',
-        'unit.Swan': 'Swan',
-        'unit.Giraffe': 'Giraffe'
-      },
-      'ar': {
-        'header.title': 'منصة طلب الخدمات',
-        'header.language': 'العربية',
-        'serviceOrder.title': 'طلب الخدمة',
-        'serviceOrder.category': 'فئة الخدمة',
-        'serviceOrder.selectCategory': 'الرجاء تحديد فئة الخدمة',
-        'serviceOrder.item': 'عنصر الخدمة',
-        'serviceOrder.searchPlaceholder': 'بحث عن عناصر الخدمة...',
-        'serviceOrder.selectItem': 'الرجاء تحديد عنصر الخدمة',
-        'serviceOrder.tiktokViews': 'مشاهدات تيك توك الحقيقية 1000',
-        'serviceOrder.tiktokFollowers': 'متابعي تيك توك 1000',
-        'serviceOrder.tiktokLikes': 'إعجابات تيك توك 100',
-        'serviceOrder.tiktokShares': 'مشاركات تيك توك 100',
-        'serviceOrder.accountUrl': 'الحساب / الرابط',
-        'serviceOrder.accountPlaceholder': 'أدخل الرابط أو الحساب لتحسينه',
-        'serviceOrder.tiktokHint': 'شكل حساب تيك توك يجب أن يكون: https://www.tiktok.com/@اسم المستخدم',
-        'serviceOrder.gift': 'هدية',
-        'serviceOrder.quantity': 'الكمية',
-        'serviceOrder.totalPrice': 'السعر الإجمالي',
-        'serviceOrder.submit': 'تقديم الطلب',
-        'recommendedServices.title': 'الخدمات الموصى بها',
-        'recommendedServices.tiktokPackage': 'حزمة مشاهدات تيك توك',
-        'recommendedServices.tiktokPackageDesc': '5000 مشاهدة + 100 إعجاب',
-        'recommendedServices.followerPackage': 'حزمة نمو المتابعين',
-        'recommendedServices.followerPackageDesc': '2000 متابع + 500 مشاهدة',
-        'recommendedServices.select': 'تحديد',
-        'progressModal.title': 'جاري المعالجة...',
-        'progressModal.processing': 'جاري معالجة طلبك، يرجى الانتظار...',
-        'alerts.orderConfirmed': 'تم تأكيد الطلب!',
-        'alerts.completedIn24hrs': 'سيتم الانتهاء في غضون 24 ساعة. يرجى الانتظار',
-        'alerts.inputError': 'خطأ في الإدخال',
-        'alerts.checkInput': 'يرجى التحقق من معلومات الإدخال الخاصة بك',
-        'orderHistory.title': 'تاريخ الطلبات',
-        'orderHistory.noOrders': 'لا توجد سجلات طلبات',
-        'footer.aboutUs': 'عن нами',
-        'footer.aboutUsDesc': 'تقديم خدمات الترويج الاجتماعي عالية الجودة لمساعدتك في زيادة تأثير حسابك بسرعة.',
-        'footer.contact': 'اتصل بنا',
-        'footer.copyright': '© 2025 منصة طلب الخدمات. جميع الحقوق محفوظة.',
-        // 服务项目多语言配置
-        'service.tiktok_followers_1': 'تيك توك 1 متابع',
-        'service.tiktok_followers_10': 'تيك توك 10 متابعين',
-        'service.tiktok_followers_50': 'تيك توك 50 متابعين',
-        'service.tiktok_followers_100': 'تيك توك 100 متابعين',
-        'service.tiktok_followers_300': 'تيك توك 300 متابعين',
-        'service.tiktok_followers_700': 'تيك توك 700 متابعين',
-        'service.tiktok_followers_1000': 'تيك توك 1000 متابع',
-        'service.tiktok_followers_25000': 'تيك توك 25000 متابع',
-        'service.instagram_followers_10': 'إنستغرام 10 متابعين',
-        'service.instagram_likes_10': 'إنستغرام 10 إعجابات',
-        'service.youtube_views_100': 'يوتيوب 100 مشاهدة',
-        'service.youtube_subscribers_10': 'يوتيوب 10 مشتركين',
-        'service.facebook_likes_10': 'فيسبوك 10 إعجابات',
-        'service.facebook_followers_10': 'فيسبوك 10 متابعين',
-        // 礼物单位多语言
-        'unit.Rose': 'وردة',
-        'unit.Doughnut': 'دونات',
-        'unit.Cap': 'قبعة',
-        'unit.Sunglasses': 'نظارات شمسية',
-        'unit.Money Gun': 'بندقية النقود',
-        'unit.Galaxy': 'مجرة',
-        'unit.Future Encounter': 'لقاء مستقبل',
-        'unit.Lion': 'أسد',
-        'unit.Swan': 'بجعة',
-        'unit.Giraffe': 'زرافة'
-      }
-    };
+        // 初始化号码池（1-34，已修改）
+        let numberPool = [];
+        // 已抽取的号码数组
+        let drawnNumbers = [];
 
-    // 服务项目配置（抽离出来方便维护）
-    const serviceConfig = {
-      tiktok: [
-        { 
-          value: 'tiktok_followers_1', 
-          image: 'photo/b8.png',
-          unit: 'Rose',
-          giftValue: '10'
-        },
-        { 
-          value: 'tiktok_followers_10', 
-          image: 'photo/b0.png',
-          unit: 'Doughnut',
-          giftValue: '1'
-        },
-        { 
-          value: 'tiktok_followers_50', 
-          image: 'photo/b2.png',
-          unit: 'Cap',
-          giftValue: '1'
-        },
-        { 
-          value: 'tiktok_followers_100', 
-          image: 'photo/b3.png',
-          unit: 'Sunglasses',
-          giftValue: '1'
-        },
-        { 
-          value: 'tiktok_followers_300', 
-          image: 'photo/b4.png',
-          unit: 'Money Gun',
-          giftValue: '1'
-        },
-        { 
-          value: 'tiktok_followers_700', 
-          image: 'photo/b5.png',
-          unit: 'Galaxy',
-          giftValue: '1'
-        },
-        { 
-          value: 'tiktok_followers_1000', 
-          image: 'photo/b6.png',
-          unit: 'Future Encounter',
-          giftValue: '1'
-        },
-        { 
-          value: 'tiktok_followers_25000', 
-          image: 'photo/b7.png',
-          unit: 'Lion',
-          giftValue: '1'
+        // 初始化号码池（修改为1到34）
+        function initNumberPool() {
+            numberPool = [];
+            for (let i = 1; i <= 34; i++) { // 核心修改：将32改为34
+                numberPool.push(i);
+            }
         }
-      ],
-      instagram: [
-        { 
-          value: 'instagram_followers_10', 
-          image: 'photo/b1.png',
-          unit: 'Galaxy',
-          giftValue: '1'
-        },
-        { 
-          value: 'instagram_likes_10', 
-          image: 'photo/b1.png',
-          unit: 'Swan',
-          giftValue: '1'
-        }
-      ],
-      youtube: [
-        { 
-          value: 'youtube_views_100', 
-          image: 'photo/b1.png',
-          unit: 'Money Gun',
-          giftValue: '1'
-        },
-        { 
-          value: 'youtube_subscribers_10', 
-          image: 'photo/b1.png',
-          unit: 'Galaxy',
-          giftValue: '1'
-        }
-      ],
-      facebook: [
-        { 
-          value: 'facebook_likes_10', 
-          image: 'photo/b1.png',
-          unit: 'Swan',
-          giftValue: '1'
-        },
-        { 
-          value: 'facebook_followers_10', 
-          image: 'photo/b1.png',
-          unit: 'Giraffe',
-          giftValue: '1'
-        }
-      ]
-    };
 
-    // DOM元素
-    const languageBtn = document.getElementById('languageBtn');
-    const languageDropdown = document.getElementById('languageDropdown');
-    const serviceCategory = document.getElementById('serviceCategory');
-    const serviceSearch = document.getElementById('serviceSearch');
-    const serviceItemsContainer = document.getElementById('serviceItemsContainer');
-    const serviceItemValue = document.getElementById('serviceItemValue');
-    const gift = document.getElementById('gift');
-    const giftUnit = document.getElementById('giftUnit');
-    const quantity = document.getElementById('quantity');
-    const totalPrice = document.getElementById('totalPrice');
-    const totalUnit = document.getElementById('totalUnit');
-    const decreaseBtn = document.getElementById('decreaseBtn');
-    const increaseBtn = document.getElementById('increaseBtn');
-    const orderForm = document.getElementById('orderForm');
-    const orderBtn = document.getElementById('orderBtn');
-    const progressModal = document.getElementById('progressModal');
-    const progressBar = document.getElementById('progressBar');
-    const progressText = document.getElementById('progressText');
-    const successAlert = document.getElementById('successAlert');
-    const errorAlert = document.getElementById('errorAlert');
-    const errorMessage = document.getElementById('errorMessage');
-    const orderList = document.getElementById('orderList');
-    const accountUrlInput = document.getElementById('accountUrl');
-    const tiktokHint = document.getElementById('tiktokHint');
-    
-    // 当前选中的单位
-    let currentUnit = 'Cap';
-    // 订单计数器
-    let orderCounter = 0;
-    // 当前语言
-    let currentLang = 'zh-CN';
-    
-    // 初始化页面语言
-    function initLanguage() {
-      // 从localStorage获取保存的语言，如果没有则使用默认语言
-      const savedLang = localStorage.getItem('preferredLanguage');
-      if (savedLang && translations[savedLang]) {
-        currentLang = savedLang;
-      }
-      updatePageLanguage();
-      // 额外更新页面标题（浏览器标签栏）
-      updateDocumentTitle();
-      // 刷新服务项目显示
-      renderServiceItems(serviceCategory.value);
-    }
-    
-    // 新增：更新浏览器标签栏的标题
-    function updateDocumentTitle() {
-      document.title = translations[currentLang]['header.title'];
-    }
-    
-    // 更新页面语言
-    function updatePageLanguage() {
-      // 更新HTML lang属性
-      document.documentElement.lang = currentLang;
-      
-      // 更新所有带有data-i18n属性的元素
-      document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (translations[currentLang][key]) {
-          // 处理placeholder属性
-          if (el.tagName === 'INPUT' && el.hasAttribute('placeholder')) {
-            el.placeholder = translations[currentLang][key];
-          } else {
-            el.textContent = translations[currentLang][key];
-          }
+        // 渲染已抽取的号码
+        function renderDrawnNumbers() {
+            drawnNumbersList.innerHTML = '';
+            drawnNumbers.forEach(num => {
+                const item = document.createElement('div');
+                item.className = 'drawn-item';
+                item.textContent = num;
+                drawnNumbersList.appendChild(item);
+            });
         }
-      });
-      
-      // 处理RTL布局
-      if (currentLang === 'ar') {
-        document.body.classList.add('rtl');
-      } else {
-        document.body.classList.remove('rtl');
-      }
-      
-      // 更新语言选择按钮文本
-      document.querySelector('[data-i18n="header.language"]').textContent = translations[currentLang]['header.language'];
-      
-      // 保存语言偏好到localStorage
-      localStorage.setItem('preferredLanguage', currentLang);
-      
-      // 同步更新浏览器标题
-      updateDocumentTitle();
-    }
 
-    // 渲染服务项目
-    function renderServiceItems(category) {
-      // 清空容器
-      serviceItemsContainer.innerHTML = '';
-      
-      // 重置隐藏输入框
-      serviceItemValue.value = '';
-      
-      let serviceOptions = [];
-      
-      // 根据类别获取服务配置
-      if (serviceConfig[category]) {
-        serviceOptions = serviceConfig[category];
-      }
-      
-      // TikTok 默认填充链接前缀和提示
-      if (category === 'tiktok') {
-        accountUrlInput.value = 'https://www.tiktok.com/@';
-        tiktokHint.classList.remove('hidden'); // 显示TikTok提示
-      } else {
-        accountUrlInput.value = '';
-        tiktokHint.classList.add('hidden'); // 隐藏TikTok提示
-      }
-      
-      // 添加服务项目选项
-      serviceOptions.forEach((option, index) => {
-        // 获取当前语言的服务项目文本
-        const serviceText = translations[currentLang][`service.${option.value}`] || option.value;
-        // 获取当前语言的单位文本
-        const unitText = translations[currentLang][`unit.${option.unit}`] || option.unit;
-        
-        const itemDiv = document.createElement('div');
-        itemDiv.className = `service-item-option p-2 border border-gray-300 rounded-lg flex flex-col items-center justify-center text-center ${index === 0 ? 'service-item-selected' : ''}`;
-        itemDiv.setAttribute('data-value', option.value);
-        itemDiv.setAttribute('data-unit', option.unit);
-        itemDiv.setAttribute('data-gift-value', option.giftValue); // 存储礼物数量
-        
-        itemDiv.innerHTML = `
-          <img src="${option.image}" alt="${serviceText}" class="service-item-img mb-1">
-          <span class="text-xs font-medium">${serviceText}</span>
-        `;
-        
-        serviceItemsContainer.appendChild(itemDiv);
-        
-        // 如果是第一个选项，设置为默认选中
-        if (index === 0) {
-          serviceItemValue.value = option.value;
-          gift.value = option.giftValue; // 设置礼物数量
-          giftUnit.textContent = unitText; // 设置礼物单位（多语言）
-          totalUnit.textContent = unitText; // 设置总价单位（多语言）
-          currentUnit = option.unit;
+        // 抽奖动画
+        async function lotteryAnimation() {
+            lotteryBtn.disabled = true;
+            const duration = 1000; // 动画时长1秒
+            const interval = 50; // 数字切换间隔
+            const times = duration / interval;
+
+            // 快速切换随机数字，形成动画效果
+            for (let i = 0; i < times; i++) {
+                await new Promise(resolve => setTimeout(() => {
+                    // 从剩余号码中随机选一个显示（动画效果）
+                    const randomIndex = Math.floor(Math.random() * numberPool.length);
+                    currentNumber.textContent = numberPool[randomIndex];
+                    resolve();
+                }, interval));
+            }
+
+            // 抽取最终号码
+            const randomIndex = Math.floor(Math.random() * numberPool.length);
+            const selectedNum = numberPool[randomIndex];
+            currentNumber.textContent = selectedNum;
+
+            // 更新号码池和已抽号码
+            numberPool.splice(randomIndex, 1);
+            drawnNumbers.push(selectedNum);
+            // 排序已抽号码，方便查看
+            drawnNumbers.sort((a, b) => a - b);
+            // 重新渲染已抽号码
+            renderDrawnNumbers();
+
+            lotteryBtn.disabled = false;
+
+            // 如果号码池为空，禁用抽奖按钮
+            if (numberPool.length === 0) {
+                lotteryBtn.disabled = true;
+                lotteryBtn.textContent = '所有号码已抽完 🎊';
+            }
         }
-      });
-      
-      // 初始化服务项目点击事件
-      initServiceItemsListener();
-      
-      // 重置数量为1
-      quantity.value = '1';
-      
-      // 计算总价
-      calculateTotal();
-      
-      // 检查表单是否可以提交
-      checkFormValidity();
-    }
-    
-    // 语言选择下拉框切换
-    languageBtn.addEventListener('click', () => {
-      languageDropdown.classList.toggle('hidden');
-    });
-    
-    // 点击页面其他地方关闭下拉框
-    document.addEventListener('click', (e) => {
-      if (!languageBtn.contains(e.target)) {
-        languageDropdown.classList.add('hidden');
-      }
-    });
-    
-    // 语言选择事件
-    document.querySelectorAll('[data-lang]').forEach(el => {
-      el.addEventListener('click', (e) => {
-        e.preventDefault();
-        const lang = el.getAttribute('data-lang');
-        if (lang !== currentLang && translations[lang]) {
-          currentLang = lang;
-          updatePageLanguage();
-          // 刷新服务项目显示
-          renderServiceItems(serviceCategory.value);
+
+        // 重置功能
+        function resetLottery() {
+            initNumberPool();
+            drawnNumbers = [];
+            currentNumber.textContent = '?';
+            renderDrawnNumbers();
+            lotteryBtn.disabled = false;
+            lotteryBtn.textContent = '开始抽号 🎉'; // 重置时也保持按钮文字为开始抽号
         }
-        languageDropdown.classList.add('hidden');
-      });
-    });
-    
-    // 服务项目搜索功能
-    serviceSearch.addEventListener('input', () => {
-      const searchTerm = serviceSearch.value.toLowerCase();
-      const items = serviceItemsContainer.querySelectorAll('.service-item-option');
-      
-      items.forEach(item => {
-        const itemText = item.querySelector('span').textContent.toLowerCase();
-        item.style.display = itemText.includes(searchTerm) ? 'flex' : 'none';
-      });
-    });
-    
-    // 服务项目选择事件
-    function selectServiceItem(item) {
-      // 移除所有选中状态
-      serviceItemsContainer.querySelectorAll('.service-item-option').forEach(el => {
-        el.classList.remove('service-item-selected');
-      });
-      
-      // 添加选中状态
-      item.classList.add('service-item-selected');
-      
-      // 获取数据
-      const value = item.getAttribute('data-value');
-      const unitKey = item.getAttribute('data-unit') || 'Cap';
-      const giftValue = item.getAttribute('data-gift-value') || '1'; // 获取礼物数量
-      
-      // 获取当前语言的单位文本
-      const unitText = translations[currentLang][`unit.${unitKey}`] || unitKey;
-      
-      // 更新隐藏输入框值
-      serviceItemValue.value = value;
-      
-      // 更新礼物和单位（多语言）
-      gift.value = giftValue; // 设置礼物数量
-      giftUnit.textContent = unitText; // 设置礼物单位
-      totalUnit.textContent = unitText; // 设置总价单位
-      currentUnit = unitKey;
-      
-      // 重置数量为1
-      quantity.value = '1';
-      
-      // 计算总价
-      calculateTotal();
-      
-      // 检查表单是否可以提交
-      checkFormValidity();
-    }
-    
-    // 数量增减按钮事件
-    decreaseBtn.addEventListener('click', () => {
-      if (quantity.value > 1) {
-        quantity.value = parseInt(quantity.value) - 1;
-        calculateTotal();
-      }
-    });
-    
-    increaseBtn.addEventListener('click', () => {
-      quantity.value = parseInt(quantity.value) + 1;
-      calculateTotal();
-    });
-    
-    // 数量输入框变化事件
-    quantity.addEventListener('input', () => {
-      // 确保数量不小于1
-      if (quantity.value < 1) {
-        quantity.value = 1;
-      }
-      calculateTotal();
-    });
-    
-    // 计算总价 - 总价 = 礼物数量 × 数量
-    function calculateTotal() {
-      const giftValue = parseInt(gift.value) || 1;
-      const qty = parseInt(quantity.value) || 1;
-      totalPrice.value = giftValue * qty;
-    }
-    
-    // 检查表单是否填写完整
-    function checkFormValidity() {
-      const serviceCategoryValue = serviceCategory.value;
-      const serviceItemValueVal = serviceItemValue.value;
-      const accountUrlValue = accountUrlInput.value.trim();
-      
-      // TikTok 特殊验证
-      if (serviceCategoryValue === 'tiktok') {
-        const atIndex = accountUrlValue.indexOf('@');
-        // 检查是否包含@且@后面有内容
-        if (atIndex === -1 || atIndex === accountUrlValue.length - 1) {
-          orderBtn.setAttribute('disabled', 'true');
-          orderBtn.classList.add('btn-disabled');
-          return false;
-        }
-      }
-      
-      if (serviceCategoryValue && serviceItemValueVal && accountUrlValue) {
-        orderBtn.removeAttribute('disabled');
-        orderBtn.classList.remove('btn-disabled');
-        return true;
-      } else {
-        orderBtn.setAttribute('disabled', 'true');
-        orderBtn.classList.add('btn-disabled');
-        return false;
-      }
-    }
-    
-    // 初始化服务项目容器事件监听
-    function initServiceItemsListener() {
-      // 为所有服务项目选项添加点击事件
-      serviceItemsContainer.querySelectorAll('.service-item-option').forEach(item => {
-        item.addEventListener('click', () => {
-          selectServiceItem(item);
-        });
-      });
-    }
-    
-    // 服务类别变化事件
-    serviceCategory.addEventListener('change', () => {
-      renderServiceItems(serviceCategory.value);
-    });
-    
-    // 监听账号/链接输入变化
-    accountUrlInput.addEventListener('input', checkFormValidity);
-    
-    // 表单提交事件 - 加快一倍
-    orderForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      
-      // 再次验证表单（防止绕过前端验证）
-      if (!checkFormValidity()) {
-        // 显示错误提示
-        if (serviceCategory.value === 'tiktok') {
-          errorMessage.textContent = translations[currentLang]['serviceOrder.tiktokHint'];
-        } else {
-          errorMessage.textContent = translations[currentLang]['alerts.checkInput'];
-        }
-        errorAlert.style.display = 'block';
-        
-        // 3秒后隐藏错误提示
-        setTimeout(() => {
-          errorAlert.style.display = 'none';
-        }, 3000);
-        
-        return;
-      }
-      
-      // 显示进度条弹窗
-      progressModal.style.display = 'flex';
-      
-      // 模拟进度更新 - 再加快一倍（每75毫秒更新一次，总时长0.75秒）
-      let progress = 0;
-      const interval = setInterval(() => {
-        progress += Math.random() * 40; // 每次增加更多进度
-        if (progress > 100) progress = 100;
-        
-        // 更新进度条宽度
-        progressBar.style.width = `${progress}%`;
-        
-        // 更新进度文本（更快切换）
-        if (progress < 50) {
-          progressText.textContent = translations[currentLang]['progressModal.processing'];
-        } else if (progress < 80) {
-          progressText.textContent = translations[currentLang]['alerts.orderConfirmed'];
-        } else {
-          progressText.textContent = translations[currentLang]['alerts.completedIn24hrs'];
-        }
-        
-        // 当进度达到100%时，完成订单
-        if (progress === 100) {
-          clearInterval(interval);
-          
-          // 延迟250毫秒后关闭进度条弹窗（再加快一倍）
-          setTimeout(() => {
-            progressModal.style.display = 'none';
-            successAlert.style.display = 'block';
-            
-            // 添加订单记录
-            addOrderRecord();
-            
-            // 5秒后隐藏成功提示
-            setTimeout(() => {
-              successAlert.style.display = 'none';
-            }, 5000);
-          }, 250);
-        }
-      }, 75); // 从150ms改为75ms
-    });
-    
-    // 添加订单记录
-    function addOrderRecord() {
-      orderCounter++;
-      
-      // 获取选中的服务项目文本
-      const selectedItem = serviceItemsContainer.querySelector('.service-item-selected');
-      const itemText = selectedItem ? selectedItem.querySelector('span').textContent : '';
-      
-      // 获取订单信息
-      const categoryText = serviceCategory.options[serviceCategory.selectedIndex].text;
-      // 处理类别文本的多语言（这里可以根据需要扩展，当前直接用选项文本）
-      const categoryTextI18n = translations[currentLang][`serviceCategory.${serviceCategory.value}`] || categoryText;
-      const accountUrl = accountUrlInput.value;
-      const qty = quantity.value;
-      const total = totalPrice.value;
-      const unitKey = currentUnit;
-      const unitText = translations[currentLang][`unit.${unitKey}`] || unitKey;
-      
-      // 获取当前时间
-      const now = new Date();
-      const dateTime = now.toLocaleString(currentLang); // 根据当前语言显示时间格式
-      
-      // 创建订单记录HTML
-      const orderRecord = `
-        <div class="bg-white rounded-xl shadow-elevation-1 p-4 card-hover fade-in">
-          <div class="flex justify-between items-start mb-3">
-            <div>
-              <h3 class="font-medium">${translations[currentLang]['orderHistory.title']} #${orderCounter}</h3>
-              <p class="text-xs text-gray-500">${dateTime}</p>
-            </div>
-            <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full" data-i18n="progressModal.processing">${translations[currentLang]['progressModal.processing']}</span>
-          </div>
-          
-          <div class="grid grid-cols-2 gap-3 mb-3">
-            <div>
-              <p class="text-xs text-gray-500" data-i18n="serviceOrder.category">${translations[currentLang]['serviceOrder.category']}</p>
-              <p class="text-sm font-medium">${categoryTextI18n}</p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500" data-i18n="serviceOrder.item">${translations[currentLang]['serviceOrder.item']}</p>
-              <p class="text-sm font-medium">${itemText}</p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500" data-i18n="serviceOrder.accountUrl">${translations[currentLang]['serviceOrder.accountUrl']}</p>
-              <p class="text-sm font-medium truncate" style="max-width: 150px;">${accountUrl}</p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500" data-i18n="serviceOrder.quantity">${translations[currentLang]['serviceOrder.quantity']}</p>
-              <p class="text-sm font-medium">${qty}</p>
-            </div>
-          </div>
-          
-          <div class="flex justify-between items-center pt-3 border-t border-gray-100">
-            <div>
-              <p class="text-xs text-gray-500" data-i18n="serviceOrder.totalPrice">${translations[currentLang]['serviceOrder.totalPrice']}</p>
-              <p class="text-lg font-bold text-primary">${total} ${unitText}</p>
-            </div>
-            <div class="text-right">
-              <p class="text-xs text-gray-500" data-i18n="alerts.completedIn24hrs">${translations[currentLang]['alerts.completedIn24hrs']}</p>
-              <p class="text-sm font-medium">24${currentLang === 'zh-CN' ? '小时内' : currentLang === 'ar' ? 'ساعة' : 'hrs'}</p>
-            </div>
-          </div>
-        </div>
-      `;
-      
-      // 如果是第一个订单，先清空"暂无订单记录"的提示
-      if (orderCounter === 1) {
-        orderList.innerHTML = '';
-      }
-      
-      // 添加订单记录到页面
-      orderList.insertAdjacentHTML('afterbegin', orderRecord);
-      
-      // 重置表单
-      orderForm.reset();
-      // 重置礼物相关值为默认的Cap（50粉丝对应的配置）
-      gift.value = '1';
-      const capUnitText = translations[currentLang]['unit.Cap'] || 'Cap';
-      giftUnit.textContent = capUnitText;
-      totalPrice.value = '1';
-      totalUnit.textContent = capUnitText;
-      quantity.value = '1';
-      currentUnit = 'Cap';
-      serviceItemValue.value = 'tiktok_followers_50';
-      
-      // 重置服务项目选中状态为50粉丝的选项
-      const defaultItem = serviceItemsContainer.querySelector('[data-value="tiktok_followers_50"]');
-      if (defaultItem) {
-        selectServiceItem(defaultItem);
-      } else {
-        // 备用：选中第一个选项
-        const firstItem = serviceItemsContainer.querySelector('.service-item-option');
-        if (firstItem) {
-          selectServiceItem(firstItem);
-        }
-      }
-      
-      // 如果是TikTok类别，重置链接输入框为默认值
-      if (serviceCategory.value === 'tiktok') {
-        accountUrlInput.value = 'https://www.tiktok.com/@';
-      }
-    }
-    
-    // 页面加载完成后初始化
-    document.addEventListener('DOMContentLoaded', () => {
-      // 初始化语言
-      initLanguage();
-      
-      // 初始化服务项目点击事件
-      initServiceItemsListener();
-      
-      // 触发一次服务类别变化事件，以确保默认选中TikTok时能正确加载数据
-      serviceCategory.dispatchEvent(new Event('change'));
-      
-      // 设置初始值
-      serviceItemValue.value = 'tiktok_followers_50';
-      calculateTotal();
-      checkFormValidity();
-    });
-  </script>
+
+        // 绑定事件
+        lotteryBtn.addEventListener('click', lotteryAnimation);
+        resetBtn.addEventListener('click', resetLottery);
+
+        // 页面加载时初始化
+        window.onload = function() {
+            initNumberPool();
+            renderDrawnNumbers();
+        };
+    </script>
 </body>
 </html>
