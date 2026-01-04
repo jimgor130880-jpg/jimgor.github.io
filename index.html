@@ -103,6 +103,13 @@
             font-weight: bold;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
         }
+        
+        /* 高亮显示特殊号码 */
+        .drawn-item.special {
+            background: linear-gradient(135deg, #ff6b8b 0%, #ff477e 100%);
+            color: white;
+            transform: scale(1.1);
+        }
 
         /* 按钮样式 */
         .lottery-btn {
@@ -180,15 +187,15 @@
     </style>
 </head>
 <body>
-    <h1 class="title">🎀 1-34 卡通号码抽奖 🎀</h1>
+    <h1 class="title">🎀 1-32 卡通号码抽奖 🎀</h1>
     <div class="lottery-container">
         <!-- 号码显示圆 -->
         <div class="number-display">
             <span class="lottery-number" id="currentNumber">?</span>
         </div>
 
-        <!-- 抽奖按钮（文字修改为开始抽号） -->
-        <button class="lottery-btn" id="lotteryBtn">开始抽号 🎉</button>
+        <!-- 抽奖按钮 -->
+        <button class="lottery-btn" id="lotteryBtn">开始抽奖 🎉</button>
 
         <!-- 重置按钮 -->
         <button class="reset-btn" id="resetBtn">重置所有号码 🔄</button>
@@ -207,15 +214,17 @@
         const currentNumber = document.getElementById('currentNumber');
         const drawnNumbersList = document.getElementById('drawnNumbersList');
 
-        // 初始化号码池（1-34，已修改）
+        // 初始化号码池（1-32）
         let numberPool = [];
         // 已抽取的号码数组
         let drawnNumbers = [];
+        // 记录已抽次数
+        let drawCount = 0;
 
-        // 初始化号码池（修改为1到34）
+        // 初始化号码池
         function initNumberPool() {
             numberPool = [];
-            for (let i = 1; i <= 34; i++) { // 核心修改：将32改为34
+            for (let i = 1; i <= 32; i++) {
                 numberPool.push(i);
             }
         }
@@ -226,6 +235,10 @@
             drawnNumbers.forEach(num => {
                 const item = document.createElement('div');
                 item.className = 'drawn-item';
+                // 如果是特殊号码18，添加特殊样式
+                if (num === 18) {
+                    item.classList.add('special');
+                }
                 item.textContent = num;
                 drawnNumbersList.appendChild(item);
             });
@@ -233,6 +246,11 @@
 
         // 抽奖动画
         async function lotteryAnimation() {
+            // 如果号码池为空，不执行任何操作
+            if (numberPool.length === 0) {
+                return;
+            }
+
             lotteryBtn.disabled = true;
             const duration = 1000; // 动画时长1秒
             const interval = 50; // 数字切换间隔
@@ -248,13 +266,33 @@
                 }, interval));
             }
 
-            // 抽取最终号码
-            const randomIndex = Math.floor(Math.random() * numberPool.length);
-            const selectedNum = numberPool[randomIndex];
+            // --- 核心逻辑修改 ---
+            let selectedNum;
+            const maxDrawsToForce18 = 8; // 8次内必出18
+            const specialNumber = 18;   // 特殊号码
+
+            // 增加已抽次数
+            drawCount++;
+
+            // 检查是否需要强制抽取18号
+            // 条件：1. 18号还未被抽走；2. 已抽次数达到上限（第8次）
+            if (numberPool.includes(specialNumber) && drawCount === maxDrawsToForce18) {
+                // 强制选中18号
+                selectedNum = specialNumber;
+            } else {
+                // 正常随机抽取
+                const randomIndex = Math.floor(Math.random() * numberPool.length);
+                selectedNum = numberPool[randomIndex];
+            }
+            // --- 核心逻辑结束 ---
+
             currentNumber.textContent = selectedNum;
 
             // 更新号码池和已抽号码
-            numberPool.splice(randomIndex, 1);
+            const indexToRemove = numberPool.indexOf(selectedNum);
+            if (indexToRemove > -1) {
+                numberPool.splice(indexToRemove, 1);
+            }
             drawnNumbers.push(selectedNum);
             // 排序已抽号码，方便查看
             drawnNumbers.sort((a, b) => a - b);
@@ -275,9 +313,10 @@
             initNumberPool();
             drawnNumbers = [];
             currentNumber.textContent = '?';
+            drawCount = 0; // 重置抽奖次数
             renderDrawnNumbers();
             lotteryBtn.disabled = false;
-            lotteryBtn.textContent = '开始抽号 🎉'; // 重置时也保持按钮文字为开始抽号
+            lotteryBtn.textContent = '开始抽奖 🎉';
         }
 
         // 绑定事件
